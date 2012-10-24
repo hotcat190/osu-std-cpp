@@ -32,11 +32,14 @@ public:
     virtual void update() = 0;
     virtual void render() = 0;
 
-    virtual bool InBound() = 0;
-
-    virtual bool isHit() = 0;
-    virtual bool isMiss() = 0;
+    bool isHit() {return hit;}
+    bool isMiss() {return miss;}
 
     virtual HIT_OBJECT_TYPE getHitObjectType() = 0;
+
+    bool hit = false;
+    bool miss = false;
+    bool appeared = false;
 private:
+    virtual bool InBound() = 0;
 };

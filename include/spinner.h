@@ -13,13 +13,14 @@ public:
 
     Game& game;
 
-    Position position;
-
     void handleMotion() override;
     void handleClick() override;
     void update() override;
     void render() override;
 
-    bool isHit() override;
-    bool isMiss() override;
+    HIT_OBJECT_TYPE getHitObjectType() override {return SPINNER;}
+private:
+    bool InBound() override {return true;}
+    double angle;
+
 };

@@ -11,8 +11,6 @@ enum {
 
 Circle::Circle(Game& _game)
     : game(_game),
-      hit(false),
-      miss(false),
       radius(CS_scaled),
       approachcircle(_game)
 {}

@@ -20,9 +20,6 @@ public:
 
     ApproachCircle  approachcircle;
 
-    bool isHit() override {return hit;}
-    bool isMiss() override {return miss;}
-
     void handleClick() override;
     void handleMotion() override;
     void update() override;
@@ -33,7 +30,5 @@ public:
 private:
     int radius;
     bool InBound() override;
-    bool hit;
-    bool miss;
-    bool appeared;
+
 };

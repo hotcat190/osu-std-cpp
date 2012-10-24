@@ -136,12 +136,12 @@ void Game::loadTextures()
 void Game::loadAudio()
 {
     hitnormal = SoundManager::loadSFX("skin/WhitecatEZ/normal-hitnormal.ogg");
-    music = SoundManager::loadAudio("songs/1388906 Raphlesia & BilliumMoto - My Love/audio.mp3");
+    music = SoundManager::loadAudio("songs/1263264 katagiri - ch3rry (Short Ver)/audio.mp3");
 }
 
 void Game::loadHitObjects()
 {
-    BeatmapManager::loadHitObjectsFromBeatmap("songs/1388906 Raphlesia & BilliumMoto - My Love/Raphlesia & BilliumMoto - My Love (Mao) [Our Love].osu", hitobjects, *this);
+    BeatmapManager::loadHitObjectsFromBeatmap("songs/1263264 katagiri - ch3rry (Short Ver)/katagiri - ch3rry (Short Ver.) (Inverse) [Blossom].osu", hitobjects, *this);
 }
 
 void Game::handleEvents()
@@ -195,60 +195,57 @@ void Game::update()
 //    }
     cursor.update();
 
-    std::cout << health << std::endl;
-
-
     if (health < MAX_HEALTH && health > 0)
         health -= 0.1f;
 
     if (hitobjects.size() > 0)
     {
         hitobjects.back()->update();
-        if (hitobjects.back()->getHitObjectType() == HIT_CIRCLE)
+//        if (hitobjects.back()->getHitObjectType() == HIT_CIRCLE)
+//        {
+//            hitobjects.back() = static_cast<Circle*>(hitobjects.back());
+//        }
+        if (hitobjects.back()->isHit())
         {
-            hitobjects.back() = static_cast<Circle*>(hitobjects.back());
-            if (hitobjects.back()->isHit())
+            switch (hitobjects.back()->hit_type)
             {
-                switch (hitobjects.back()->hit_type)
-                {
-                case HIT300:
-                    health += 300;
-                    break;
+            case HIT300:
+                health += 300;
+                break;
 
-                case HIT100:
-                    health += 100;
-                    break;
+            case HIT100:
+                health += 100;
+                break;
 
-                case HIT50:
-                    health += 50;
-                    break;
-                }
-                if (health > MAX_HEALTH) health = MAX_HEALTH;
-
-                SoundManager::playSoundEffect(hitnormal, effectVolume*masterVolume/100);
-
-                HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
-                hiteffects.push_front(hiteffect);
-
-                hitobjects.pop_back();
+            case HIT50:
+                health += 50;
+                break;
             }
-            else if (hitobjects.back()->isMiss())
+            if (health > MAX_HEALTH) health = MAX_HEALTH;
+
+            SoundManager::playSoundEffect(hitnormal, effectVolume*masterVolume/100);
+
+            HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+            hiteffects.push_front(hiteffect);
+
+            hitobjects.pop_back();
+        }
+        else if (hitobjects.back()->isMiss())
+        {
+            //SoundManager::playSoundEffect(combo_break, effectVolume*masterVolume/100);
+            health -= 300;
+
+            if (health < 0)
             {
-                //SoundManager::playSoundEffect(combo_break, effectVolume*masterVolume/100);
-                health -= 300;
-
-                if (health < 0)
-                {
-                    failed = true;
-                    Mix_HaltMusic();
-                    return;
-                }
-
-                HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
-                hiteffects.push_front(hiteffect);
-
-                hitobjects.pop_back();
+                failed = true;
+                Mix_HaltMusic();
+                return;
             }
+
+            HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+            hiteffects.push_front(hiteffect);
+
+            hitobjects.pop_back();
         }
     }
 

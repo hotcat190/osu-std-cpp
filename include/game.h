@@ -41,6 +41,8 @@ public:
     SDL_Texture*    scorebar_bg;
     SDL_Texture*    scorebar_colour;
 
+    SDL_Texture*    map_bg;
+
     SDL_Texture*    fail_background;
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
