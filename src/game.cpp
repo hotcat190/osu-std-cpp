@@ -1,6 +1,6 @@
 #include "game.h"
 #include "texture_manager.h"
-#include "sfx_manager.h"
+#include "sound_manager.h"
 
 Game::Game()
     : gWindow(nullptr),
@@ -10,7 +10,11 @@ Game::Game()
       gHeight(600),
       sdl_flags(0),
       cursor(),
-      hitnormal(nullptr)
+      hitnormal(nullptr),
+      music(nullptr),
+      masterVolume(10),
+      musicVolume(50),
+      effectVolume(50)
 {}
 
 Game::~Game()
@@ -64,8 +68,10 @@ void Game::init()
     }
     circles.push_back(circle);
 
-    hitnormal = SFXManager::loadSFX("skin/normal-hitnormal.ogg");
+    hitnormal = SoundManager::loadSFX("skin/normal-hitnormal.ogg");
+    music = SoundManager::loadAudio("songs/tutorial/audio.mp3");
 
+    SoundManager::playMusic(music, musicVolume*masterVolume/100);
 }
 
 void Game::handleEvents()
@@ -102,9 +108,9 @@ void Game::update()
     if (circles.size() > 0)
     {
         circles.front().update();
-        if (circles.front().hit)
+        if (circles.front().isHit())
         {
-            SFXManager::playHitEffect(hitnormal);
+            SoundManager::playHitEffect(hitnormal, effectVolume*masterVolume/100);
             circles.pop_front();
         }
     }
@@ -128,6 +134,8 @@ void Game::render()
 
 void Game::clean()
 {
+    Mix_FreeChunk(hitnormal);
+    Mix_FreeMusic(music);
     SDL_DestroyWindow(gWindow);
     SDL_DestroyRenderer(gRenderer);
     SDL_Quit();
@@ -143,3 +151,4 @@ void Game::log(std::ostream& os, const std::string &msg, bool succeed)
     }
     os << msg << " completed." << std::endl;
 }
+

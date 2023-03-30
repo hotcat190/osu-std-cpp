@@ -17,11 +17,14 @@ public:
     SDL_Texture*    hitcircleoverlay;
     SDL_Texture*    defaults[10];
 
-    bool hit;
+    bool isHit() {return hit;}
 
     void handleClick();
     void update();
     void render(SDL_Renderer* ren);
 
 private:
+    int radius;
+    bool InBound();
+    bool hit;
 };

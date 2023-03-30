@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -10,6 +11,7 @@
 
 #include "circle.h"
 #include "cursor.h"
+#include "beatmap_manager.h"
 
 class Game
 {
@@ -26,6 +28,10 @@ public:
     void start();
 
     Mix_Chunk* hitnormal;
+    Mix_Music* music;
+    int effectVolume;
+    int musicVolume;
+    int masterVolume;
 
 private:
     SDL_Window*   gWindow;

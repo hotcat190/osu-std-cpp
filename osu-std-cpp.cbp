@@ -33,11 +33,12 @@
 			<Add directory="D:/uet/code/osu-std-cpp/include" />
 		</Compiler>
 		<Unit filename="README.md" />
+		<Unit filename="include/beatmap_manager.h" />
 		<Unit filename="include/circle.h" />
 		<Unit filename="include/cursor.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/position.h" />
-		<Unit filename="include/sfx_manager.h" />
+		<Unit filename="include/sound_manager.h" />
 		<Unit filename="include/texture_manager.h" />
 		<Unit filename="skin/.credits.txt" />
 		<Unit filename="skin/.cursors.txt" />
@@ -1819,11 +1820,12 @@
 		<Unit filename="skin/welcome.ogg" />
 		<Unit filename="skin/welcome_text.png" />
 		<Unit filename="skin/welcome_text@2x.png" />
+		<Unit filename="src/beatmap_manager.cpp" />
 		<Unit filename="src/circle.cpp" />
 		<Unit filename="src/cursor.cpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/sfx_manager.cpp" />
+		<Unit filename="src/sound_manager.cpp" />
 		<Unit filename="src/texture_manager.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

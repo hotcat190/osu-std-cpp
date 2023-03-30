@@ -7,3 +7,4 @@ SDL_Texture* TextureMananger::loadTexture(std::string path, SDL_Renderer* ren)
     SDL_FreeSurface(tempSurface);
     return returnTexture;
 }
+

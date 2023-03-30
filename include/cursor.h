@@ -20,4 +20,5 @@ public:
     void update();
     void render(SDL_Renderer* ren);
 private:
+    bool expand;
 };
