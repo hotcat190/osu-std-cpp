@@ -1,20 +1,25 @@
 #include "game.h"
 #include "texture_manager.h"
 #include "sound_manager.h"
+#include "beatmap_manager.h"
+
+int K1 = SDLK_z,
+    K2 = SDLK_x;
 
 Game::Game()
     : gWindow(nullptr),
       gRenderer(nullptr),
       gFont(nullptr),
-      gWidth(800),
-      gHeight(600),
+      gWidth(640),
+      gHeight(480),
       sdl_flags(0),
       cursor(),
       hitnormal(nullptr),
       music(nullptr),
       masterVolume(10),
       musicVolume(50),
-      effectVolume(50)
+      effectVolume(50),
+      time_elapsed(0)
 {}
 
 Game::~Game()
@@ -24,6 +29,9 @@ void Game::start()
 {
     init();
     running = true;
+
+    init_time = SDL_GetTicks();
+    std::cout << init_time << std::endl;
     while (running)
     {
         handleEvents();
@@ -60,13 +68,25 @@ void Game::init()
 
     cursor.cursorTexture = TextureMananger::loadTexture("skin/cursor.png", gRenderer);
 
-    Circle circle;
-    circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
-    for (int i = 0; i < 10; i++)
+//    Circle circle;
+//    circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
+//    for (int i = 0; i < 10; i++)
+//    {
+//        circle.defaults[i] = TextureMananger::loadTexture("skin/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
+//    }
+//    circles.push_back(circle);
+
+    BeatmapManager::loadCirclesFromBeatmap("songs/tutorial/nekodex - new beginnings (pishifat) [tutorial].osu", circles);
+    for (Circle& circle : circles)
     {
-        circle.defaults[i] = TextureMananger::loadTexture("skin/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
+        circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
+        circle.hitcircleoverlay = TextureMananger::loadTexture("skin/hitcircleoverlay.png", gRenderer);
+        circle.approachcircle.texture = TextureMananger::loadTexture("skin/approachcircle.png", gRenderer);
+        for (int i = 0; i < 10; i++)
+        {
+            circle.defaults[i] = TextureMananger::loadTexture("skin/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
+        }
     }
-    circles.push_back(circle);
 
     hitnormal = SoundManager::loadSFX("skin/normal-hitnormal.ogg");
     music = SoundManager::loadAudio("songs/tutorial/audio.mp3");
@@ -77,24 +97,33 @@ void Game::init()
 void Game::handleEvents()
 {
     SDL_Event event;
-    SDL_PollEvent(&event);
-    switch(event.type)
+    while (SDL_PollEvent(&event))
     {
-    case SDL_QUIT: case SDL_SCANCODE_ESCAPE:
-        running = false;
-        break;
+        switch(event.type)
+        {
+        case SDL_QUIT:
+            running = false;
+            break;
 
-    case SDL_MOUSEMOTION:
-        cursor.handleMotion();
-        break;
+        case SDL_MOUSEMOTION:
+            cursor.handleMotion();
+            break;
 
-    case SDL_MOUSEBUTTONDOWN:
-        cursor.handleClick();
-        if (circles.size() > 0) circles.front().handleClick();
-        break;
+        case SDL_MOUSEBUTTONDOWN:
+            cursor.handleClick();
+            time_elapsed = SDL_GetTicks() - init_time;
+            if (time_elapsed >= circles.front().time_to_appear) circles.front().handleClick();
+            break;
 
-    default:
-        break;
+        case SDL_KEYDOWN:
+            int input = event.key.keysym.sym;
+            if (input == K1 || input == K2)
+            {
+                cursor.handleClick();
+                if (circles.size() > 0) circles.front().handleClick();
+            }
+            break;
+        }
     }
 }
 
@@ -111,6 +140,12 @@ void Game::update()
         if (circles.front().isHit())
         {
             SoundManager::playHitEffect(hitnormal, effectVolume*masterVolume/100);
+            //play hit effect
+            circles.pop_front();
+        }
+        else if (circles.front().isMiss())
+        {
+            //play miss effect
             circles.pop_front();
         }
     }
@@ -123,8 +158,12 @@ void Game::render()
     SDL_RenderClear(gRenderer);
 
     //render circle
-    for (auto circle : circles) circle.render(gRenderer);
-
+    time_elapsed = SDL_GetTicks() - init_time;
+    for (Circle circle : circles)
+    {
+        if (time_elapsed >= circle.time_to_appear) circle.render(gRenderer);
+        else break;
+    }
     //render cursor
     cursor.render(gRenderer);
 
@@ -141,7 +180,7 @@ void Game::clean()
     SDL_Quit();
 }
 
-void Game::log(std::ostream& os, const std::string &msg, bool succeed)
+void Game::log(std::ostream& os, const std::string &msg, bool succeed) const
 {
     if (!succeed)
     {

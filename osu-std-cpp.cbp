@@ -33,6 +33,7 @@
 			<Add directory="D:/uet/code/osu-std-cpp/include" />
 		</Compiler>
 		<Unit filename="README.md" />
+		<Unit filename="include/approach_circle.h" />
 		<Unit filename="include/beatmap_manager.h" />
 		<Unit filename="include/circle.h" />
 		<Unit filename="include/cursor.h" />
@@ -1820,6 +1821,7 @@
 		<Unit filename="skin/welcome.ogg" />
 		<Unit filename="skin/welcome_text.png" />
 		<Unit filename="skin/welcome_text@2x.png" />
+		<Unit filename="src/approach_circle.cpp" />
 		<Unit filename="src/beatmap_manager.cpp" />
 		<Unit filename="src/circle.cpp" />
 		<Unit filename="src/cursor.cpp" />

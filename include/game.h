@@ -32,16 +32,20 @@ public:
     int effectVolume;
     int musicVolume;
     int masterVolume;
+    int           gWidth, gHeight;
+    Uint32 time_elapsed;
+
+    std::list<Circle> circles;
 
 private:
     SDL_Window*   gWindow;
     SDL_Renderer* gRenderer;
     _TTF_Font*    gFont;
-    int           gWidth, gHeight;
     bool          running;
     Uint8         sdl_flags;
 
-    std::list<Circle> circles;
+    Uint32 init_time;
+
     Cursor cursor;
 
     void init();
@@ -49,5 +53,5 @@ private:
     void update();
     void render();
     void clean();
-    void log(std::ostream& os, const std::string &msg, bool fatal);
+    void log(std::ostream& os, const std::string &msg, bool fatal) const;
 };
