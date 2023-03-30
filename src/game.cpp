@@ -6,8 +6,8 @@ Game::Game()
     : gWindow(nullptr),
       gRenderer(nullptr),
       gFont(nullptr),
-      gWidth(1280),
-      gHeight(720),
+      gWidth(800),
+      gHeight(600),
       sdl_flags(0),
       cursor(),
       hitnormal(nullptr)
