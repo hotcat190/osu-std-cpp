@@ -2,7 +2,7 @@
 #include <cmath>
 
 Circle::Circle()
-    : position(1280/2, 720/2),
+    : position(400, 300),
       hitcircle(nullptr),
       hitcircleoverlay(nullptr),
       hit(false)
