@@ -1,9 +1,10 @@
 #include "beatmap_manager.h"
+#include "difficulty_modifiers.h"
+
 #include <fstream>
 #include <sstream>
-#include <vector>
 
-void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::list<Circle>& circles)
+void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::deque<Circle>& circles)
 {
     std::ifstream fin(path);
     std::string line;
@@ -26,16 +27,17 @@ void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::list<Circle>&
         }
 
         Circle circle;
-        circle.position.x = std::stoi(substrings[0]);
-        circle.position.y = std::stoi(substrings[1]);
+        circle.position.x = std::stoi(substrings[0]) * 640.f/640.f + 80 + CS_scaled/2;
+        circle.position.y = std::stoi(substrings[1]) * 480.f/480.f + 60 + CS_scaled/2;
 
-        circle.time_to_hit = Uint32(std::stoi(substrings[2]));
-        circle.time_to_appear = circle.time_to_hit - 900;
+        int uOffset = 5; //universal offset
+        circle.time_to_hit = Uint32(std::stoi(substrings[2])) + uOffset;
+        circle.time_to_appear = circle.time_to_hit - AR_scaled;
 
         circle.approachcircle.position = circle.position;
         circle.approachcircle.time_appear = circle.time_to_appear;
 
-        circles.push_back(circle);
+        circles.push_front(circle);
     }
 }
 

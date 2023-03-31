@@ -8,7 +8,7 @@ Circle::Circle()
       hitcircleoverlay(nullptr),
       hit(false),
       miss(false),
-      radius(128),
+      radius(CS_scaled),
       time_to_hit(0),
       time_to_appear(0),
       approachcircle()
@@ -31,35 +31,39 @@ bool Circle::InBound()
     return (std::sqrt((x-position.x)*(x-position.x)+(y-position.y)*(y-position.y)) <= radius/2);
 }
 
-void Circle::handleClick()
+void Circle::handleClick(Uint32 time_elapsed)
 {
-    if (InBound())
+    if (time_elapsed < time_to_appear)
+        return;
+    else if (InBound())
     {
         //register hit
         hit = true;
     }
 }
 
-void Circle::update()
+void Circle::update(Uint32 time_elapsed)
 {
-    int time_elapsed = SDL_GetTicks();
-    if (!hit && time_elapsed > time_to_hit + 725)
+    int HIT_WINDOW_50 = 120;
+    if (!hit && time_elapsed > time_to_hit + HIT_WINDOW_50)
     {
 //        render fade out effect
-
+        std::cout << time_elapsed << std::endl;
         miss = true;
     }
 }
 
-void Circle::render(SDL_Renderer* ren)
+void Circle::render(SDL_Renderer* ren, Uint32 time_elapsed)
 {
 //    if (hit || miss)
 //        return;
+    if (time_elapsed < time_to_appear)
+        return;
     SDL_Rect dst = {position.x - radius/2, position.y - radius/2, radius, radius};
     SDL_RenderCopy(ren, hitcircle, NULL, &dst);
     SDL_RenderCopy(ren, defaults[1], NULL, &dst);
 
-    approachcircle.render(ren);
+    approachcircle.render(ren, time_elapsed);
 }
 
 

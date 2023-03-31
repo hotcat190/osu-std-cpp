@@ -2,6 +2,7 @@
 
 #include "position.h"
 #include "approach_circle.h"
+#include "difficulty_modifiers.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -23,9 +24,9 @@ public:
     bool isHit() {return hit;}
     bool isMiss() {return miss;}
 
-    void handleClick();
-    void update();
-    void render(SDL_Renderer* ren);
+    void handleClick(Uint32 time_elapsed);
+    void update(Uint32 time_elapsed);
+    void render(SDL_Renderer* ren, Uint32 time_elapsed);
 
     Uint32 time_to_hit;
     Uint32 time_to_appear;

@@ -3,15 +3,12 @@
 #include "sound_manager.h"
 #include "beatmap_manager.h"
 
-int K1 = SDLK_z,
-    K2 = SDLK_x;
-
 Game::Game()
     : gWindow(nullptr),
       gRenderer(nullptr),
       gFont(nullptr),
-      gWidth(640),
-      gHeight(480),
+      gWidth(800),
+      gHeight(600),
       sdl_flags(0),
       cursor(),
       hitnormal(nullptr),
@@ -30,10 +27,14 @@ void Game::start()
     init();
     running = true;
 
+    SoundManager::playMusic(music, musicVolume*masterVolume/100);
+
     init_time = SDL_GetTicks();
     std::cout << init_time << std::endl;
+
     while (running)
     {
+        time_elapsed = SDL_GetTicks() - init_time;
         handleEvents();
         update();
         render();
@@ -76,7 +77,7 @@ void Game::init()
 //    }
 //    circles.push_back(circle);
 
-    BeatmapManager::loadCirclesFromBeatmap("songs/tutorial/nekodex - new beginnings (pishifat) [tutorial].osu", circles);
+    BeatmapManager::loadCirclesFromBeatmap("songs/1263264 katagiri - ch3rry (Short Ver)/katagiri - ch3rry (Short Ver.) (Inverse) [Blossom].osu", circles);
     for (Circle& circle : circles)
     {
         circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
@@ -89,9 +90,8 @@ void Game::init()
     }
 
     hitnormal = SoundManager::loadSFX("skin/normal-hitnormal.ogg");
-    music = SoundManager::loadAudio("songs/tutorial/audio.mp3");
+    music = SoundManager::loadAudio("songs/1263264 katagiri - ch3rry (Short Ver)/audio.mp3");
 
-    SoundManager::playMusic(music, musicVolume*masterVolume/100);
 }
 
 void Game::handleEvents()
@@ -111,16 +111,19 @@ void Game::handleEvents()
 
         case SDL_MOUSEBUTTONDOWN:
             cursor.handleClick();
-            time_elapsed = SDL_GetTicks() - init_time;
-            if (time_elapsed >= circles.front().time_to_appear) circles.front().handleClick();
+            if (circles.size() > 0)
+                circles.back().handleClick(time_elapsed);
             break;
 
         case SDL_KEYDOWN:
             int input = event.key.keysym.sym;
+            int K1 = SDLK_z,
+                K2 = SDLK_x;
             if (input == K1 || input == K2)
             {
                 cursor.handleClick();
-                if (circles.size() > 0) circles.front().handleClick();
+                if (circles.size() > 0)
+                    circles.back().handleClick(time_elapsed);
             }
             break;
         }
@@ -136,19 +139,20 @@ void Game::update()
 //    }
     if (circles.size() > 0)
     {
-        circles.front().update();
-        if (circles.front().isHit())
+        circles.back().update(time_elapsed);
+        if (circles.back().isHit())
         {
             SoundManager::playHitEffect(hitnormal, effectVolume*masterVolume/100);
             //play hit effect
-            circles.pop_front();
+            circles.pop_back();
         }
-        else if (circles.front().isMiss())
+        else if (circles.back().isMiss())
         {
             //play miss effect
-            circles.pop_front();
+            circles.pop_back();
         }
     }
+
     cursor.update();
 }
 
@@ -158,12 +162,11 @@ void Game::render()
     SDL_RenderClear(gRenderer);
 
     //render circle
-    time_elapsed = SDL_GetTicks() - init_time;
-    for (Circle circle : circles)
+    for (auto circle : circles)
     {
-        if (time_elapsed >= circle.time_to_appear) circle.render(gRenderer);
-        else break;
+        circle.render(gRenderer, time_elapsed);
     }
+
     //render cursor
     cursor.render(gRenderer);
 

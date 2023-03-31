@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <list>
+#include <deque>
+#include <vector>
 
 #include "circle.h"
 
@@ -10,5 +11,5 @@ class Circle;
 class BeatmapManager
 {
 public:
-    static void loadCirclesFromBeatmap(std::string path, std::list<Circle>& circles);
+    static void loadCirclesFromBeatmap(std::string path, std::deque<Circle>& circles);
 };

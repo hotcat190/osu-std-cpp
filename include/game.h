@@ -4,10 +4,9 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include <vector>
 #include <string>
 #include <iostream>
-#include <list>
+#include <deque>
 
 #include "circle.h"
 #include "cursor.h"
@@ -32,10 +31,11 @@ public:
     int effectVolume;
     int musicVolume;
     int masterVolume;
-    int           gWidth, gHeight;
+    int gWidth, gHeight;
     Uint32 time_elapsed;
 
-    std::list<Circle> circles;
+    std::deque<Circle> circles;
+    Cursor cursor;
 
 private:
     SDL_Window*   gWindow;
@@ -45,8 +45,6 @@ private:
     Uint8         sdl_flags;
 
     Uint32 init_time;
-
-    Cursor cursor;
 
     void init();
     void handleEvents();
