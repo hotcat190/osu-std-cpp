@@ -37,6 +37,7 @@
 		<Unit filename="include/beatmap_manager.h" />
 		<Unit filename="include/circle.h" />
 		<Unit filename="include/cursor.h" />
+		<Unit filename="include/difficulty_modifiers.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/position.h" />
 		<Unit filename="include/sound_manager.h" />
