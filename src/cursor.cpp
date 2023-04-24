@@ -1,12 +1,17 @@
 #include "cursor.h"
+#include "game.h"
 
-Cursor::Cursor()
-    : expand(false)
+Cursor::Cursor(Game& _game)
+    : game(_game),
+      expand(false)
 {
     SDL_GetMouseState(&position.x, &position.y);
     cursorRect.x = position.x - 55/2;
     cursorRect.y = position.y - 55/2;
 }
+
+Cursor::~Cursor()
+{}
 
 void Cursor::handleMotion()
 {
@@ -25,13 +30,11 @@ void Cursor::update()
 {
     cursorRect.x = position.x - 55/2;
     cursorRect.y = position.y - 55/2;
-    SDL_ShowCursor(false);
 }
 
-void Cursor::render(SDL_Renderer* ren)
+void Cursor::render()
 {
-    SDL_RenderCopy(ren, cursorTexture, nullptr, &cursorRect);
+    SDL_RenderCopy(game.gRenderer, cursorTexture, nullptr, &cursorRect);
 }
 
-Cursor::~Cursor()
-{}
+

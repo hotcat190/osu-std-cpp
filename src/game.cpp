@@ -19,53 +19,37 @@ Game::Game()
       gWidth(800),
       gHeight(600),
       sdl_flags(0),
-      cursor(),
+      cursor(*this),
       hitnormal(nullptr),
       music(nullptr),
       masterVolume(25),
       musicVolume(50),
       effectVolume(50),
       time_elapsed(0),
-      health(10000)
+      health(MAX_HEALTH)
 {}
 
 Game::~Game()
 {}
-
-void Game::renderFailScreen()
-{
-    while (running && failed)
-    {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type != SDL_KEYDOWN)
-                continue;
-
-            int input = event.key.keysym.sym;
-            if (input == SDLK_BACKQUOTE)
-                retry = true;
-            break;
-        }
-
-        if (retry)
-            return;
-
-        render();
-    }
-}
 
 void Game::start()
 {
     init();
     running = true;
 
+    loadTextures();
+    loadAudio();
+
     while (running)
     {
-        load();
+        loadHitObjects();
 
-        //Play Music
         SoundManager::playMusic(music, musicVolume*masterVolume/100);
+
+        health = MAX_HEALTH;
+
+        retry = false;
+        failed = false;
 
         init_time = SDL_GetTicks();
         std::cout << init_time << std::endl;
@@ -73,17 +57,26 @@ void Game::start()
         while (!failed)
         {
             time_elapsed = SDL_GetTicks() - init_time;
-            handleEvents();
 
-            if (!running)
+            handleEvents();
+            if (!running || retry)
                 break;
 
             update();
+            if (failed)
+                break;
+
             render();
         }
-//        renderFailScreen();
-//        if (!retry)
-//            running = false;
+        renderFailScreen();
+        if (retry)
+        {
+            while (hitobjects.size() > 0)
+                hitobjects.pop_back();
+            while (hiteffects.size() > 0)
+                hiteffects.pop_back();
+        }
+        else running = false;
     }
     clean();
 }
@@ -113,16 +106,10 @@ void Game::init()
     log(std::cout, "SDL_CreateRenderer", true);
 }
 
-void Game::load()
-{
-    loadTextures();
-    loadAudio();
-    loadHitObjects();
-}
-
 void Game::loadTextures()
 {
     cursor.cursorTexture = TextureMananger::loadTexture("skin/WhitecatEZ/cursor.png", gRenderer);
+    SDL_ShowCursor(false);
 
     hitcircle = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircle.png", gRenderer);
     hitcircleoverlay = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircleoverlay.png", gRenderer);
@@ -138,7 +125,10 @@ void Game::loadTextures()
 
     scorebar_bg = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-bg@2x.png", gRenderer);
     scorebar_colour = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-colour@2x.png", gRenderer);
-    fail_background = TextureMananger::loadTexture("skin/WhitecatEZ/fail-background.png@2x.png", gRenderer);
+
+    fail_background = TextureMananger::loadTexture("skin/WhitecatEZ/fail-background@2x.png", gRenderer);
+    pause_retry = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", gRenderer);
+    pause_back = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", gRenderer);
 
     spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", gRenderer);
 }
@@ -187,6 +177,10 @@ void Game::handleEvents()
                 if (hitobjects.size() > 0)
                     hitobjects.back()->handleClick();
             }
+            else if (input == SDLK_BACKQUOTE)
+            {
+                retry = true;
+            }
             break;
         }
     }
@@ -199,16 +193,13 @@ void Game::update()
 //        running = false;
 //        return;
 //    }
-    if (failed)
-        return;
+    cursor.update();
 
-//    health -= 1;
+    std::cout << health << std::endl;
 
-    if (health == 0)
-    {
-        failed = true;
-        return;
-    }
+
+    if (health < MAX_HEALTH && health > 0)
+        health -= 0.1f;
 
     if (hitobjects.size() > 0)
     {
@@ -218,10 +209,25 @@ void Game::update()
             hitobjects.back() = static_cast<Circle*>(hitobjects.back());
             if (hitobjects.back()->isHit())
             {
-//                health += 1000;
+                switch (hitobjects.back()->hit_type)
+                {
+                case HIT300:
+                    health += 300;
+                    break;
+
+                case HIT100:
+                    health += 100;
+                    break;
+
+                case HIT50:
+                    health += 50;
+                    break;
+                }
+                if (health > MAX_HEALTH) health = MAX_HEALTH;
+
                 SoundManager::playSoundEffect(hitnormal, effectVolume*masterVolume/100);
 
-                HitEffect hiteffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+                HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
                 hiteffects.push_front(hiteffect);
 
                 hitobjects.pop_back();
@@ -229,8 +235,16 @@ void Game::update()
             else if (hitobjects.back()->isMiss())
             {
                 //SoundManager::playSoundEffect(combo_break, effectVolume*masterVolume/100);
+                health -= 300;
 
-                HitEffect hiteffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+                if (health < 0)
+                {
+                    failed = true;
+                    Mix_HaltMusic();
+                    return;
+                }
+
+                HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
                 hiteffects.push_front(hiteffect);
 
                 hitobjects.pop_back();
@@ -240,28 +254,18 @@ void Game::update()
 
     if (hiteffects.size() > 0)
     {
-        hiteffects.back().update();
-        if (hiteffects.back().time_alive > 250)
+        hiteffects.back()->update();
+        if (hiteffects.back()->time_alive > 250)
         {
             hiteffects.pop_back();
         }
     }
-
-    cursor.update();
 }
 
 void Game::render()
 {
     //clear buffer
     SDL_RenderClear(gRenderer);
-
-    if (failed)
-    {
-        SDL_RenderCopy(gRenderer, fail_background, nullptr, nullptr);
-        SDL_RenderPresent(gRenderer);
-        return;
-    }
-
 
     //render hit objects
     for (auto hitobject : hitobjects)
@@ -271,15 +275,16 @@ void Game::render()
 
     for (auto hiteffect : hiteffects)
     {
-        hiteffect.render();
+        hiteffect->render();
     }
 
-    //render cursor
-    cursor.render(gRenderer);
-
     //render scorebar
-    SDL_Rect scorebar_rect = {0, 0, 1350*health/10000, 80};
-    SDL_RenderCopy(gRenderer, scorebar_bg, nullptr, &scorebar_rect);
+    SDL_Rect scorebar_bg_src = {0, 0, 980*health/MAX_HEALTH, 80};
+    SDL_Rect scorebar_bg_dst = {0, 0, 490*health/MAX_HEALTH, 40};
+    SDL_RenderCopy(gRenderer, scorebar_bg, &scorebar_bg_src, &scorebar_bg_dst);
+
+    //render cursor
+    cursor.render();
 
     //present buffer
     SDL_RenderPresent(gRenderer);
@@ -305,3 +310,64 @@ void Game::log(std::ostream& os, const std::string &msg, bool succeed) const
     os << msg << " completed." << std::endl;
 }
 
+void Game::renderFailScreen()
+{
+    while (running && failed)
+    {
+        SDL_Rect fail_bg_rect = {gWidth/4, 0, gWidth/2, gHeight};
+        SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 20, 300, 80};
+        SDL_Rect pause_back_rect = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
+
+        //Handle Events
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                running = false;
+            }
+            else if (event.type == SDL_MOUSEMOTION)
+            {
+                cursor.handleMotion();
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                SDL_Point cursor_pos = {cursor.position.x, cursor.position.y};
+
+                if (SDL_PointInRect(&cursor_pos, &pause_retry_rect))
+                {
+                    retry = true;
+                }
+                else if (SDL_PointInRect(&cursor_pos, &pause_back_rect))
+                {
+                    running = false;
+                }
+            }
+            else if (event.type == SDL_KEYDOWN)
+            {
+                int input = event.key.keysym.sym;
+                if (input == SDLK_BACKQUOTE)
+                    retry = true;
+            }
+        }
+
+        cursor.update();
+
+        SDL_RenderClear(gRenderer);
+
+
+        SDL_RenderCopy(gRenderer, fail_background, nullptr, &fail_bg_rect);
+        SDL_RenderCopy(gRenderer, pause_retry, nullptr, &pause_retry_rect);
+        SDL_RenderCopy(gRenderer, pause_back, nullptr, &pause_back_rect);
+
+        cursor.render();
+
+        SDL_RenderPresent(gRenderer);
+
+        if (retry)
+        {
+            failed = false;
+            return;
+        }
+    }
+}

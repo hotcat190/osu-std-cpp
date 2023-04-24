@@ -40,7 +40,10 @@ public:
 
     SDL_Texture*    scorebar_bg;
     SDL_Texture*    scorebar_colour;
+
     SDL_Texture*    fail_background;
+    SDL_Texture*    pause_retry;
+    SDL_Texture*    pause_back;
 
     SDL_Texture*    spinner_circle;
 
@@ -58,7 +61,7 @@ public:
     Uint32 time_elapsed;
 
     std::deque<HitObject*> hitobjects;
-    std::deque<HitEffect> hiteffects;
+    std::deque<HitEffect*> hiteffects;
 
     Cursor cursor;
 
@@ -71,12 +74,11 @@ private:
 
     Uint32 init_time;
 
-    int health;
+    float health;
 
     bool running;
     bool failed;
     bool retry;
-    bool quit;
 
     void init();
 
@@ -92,4 +94,5 @@ private:
     void log(std::ostream& os, const std::string &msg, bool fatal) const;
 
     void renderFailScreen();
+    const float MAX_HEALTH = 3000;
 };
