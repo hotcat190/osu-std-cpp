@@ -10,7 +10,7 @@ Mix_Music* SoundManager::loadAudio(std::string path)
     return Mix_LoadMUS(path.c_str());
 }
 
-void SoundManager::playHitEffect(Mix_Chunk* effect, int volume)
+void SoundManager::playSoundEffect(Mix_Chunk* effect, int volume)
 {
     Mix_Volume(-1, volume);
     Mix_PlayChannel(-1, effect, 0);

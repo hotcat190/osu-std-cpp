@@ -1,10 +1,16 @@
 #include "beatmap_manager.h"
 #include "difficulty_modifiers.h"
 
+#include "game.h"
+
+#include "circle.h"
+#include "spinner.h"
+
 #include <fstream>
 #include <sstream>
+#include <vector>
 
-void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::deque<Circle>& circles)
+void BeatmapManager::loadHitObjectsFromBeatmap(std::string path, std::deque<HitObject*>& hitobjects, Game& game)
 {
     std::ifstream fin(path);
     std::string line;
@@ -14,6 +20,7 @@ void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::deque<Circle>
     }
     while (line != "[HitObjects]");
 
+    int combo = 1;
     while (std::getline(fin, line))
     {
         std::istringstream iss(line);
@@ -26,18 +33,37 @@ void BeatmapManager::loadCirclesFromBeatmap(std::string path, std::deque<Circle>
             substrings.push_back(value);
         }
 
-        Circle circle;
-        circle.position.x = std::stoi(substrings[0]) * 640.f/640.f + 80 + CS_scaled/2;
-        circle.position.y = std::stoi(substrings[1]) * 480.f/480.f + 60 + CS_scaled/2;
+        if ((std::stoi(substrings[3]) & HIT_CIRCLE) ||
+            (std::stoi(substrings[3]) & SLIDER) ||
+            (std::stoi(substrings[3]) & SPINNER))
+        {
+            Circle* circle = new Circle(game);
+            circle->position.x = std::stoi(substrings[0]) * 640.f/640.f + 80 + CS_scaled/2;
+            circle->position.y = std::stoi(substrings[1]) * 480.f/480.f + 60 + CS_scaled/2;
 
-        int uOffset = 5; //universal offset
-        circle.time_to_hit = Uint32(std::stoi(substrings[2])) + uOffset;
-        circle.time_to_appear = circle.time_to_hit - AR_scaled;
+            int uOffset = 100; //universal offset
+            circle->time_to_hit = Uint32(std::stoi(substrings[2])) + uOffset;
+            circle->time_to_appear = circle->time_to_hit - AR_scaled;
 
-        circle.approachcircle.position = circle.position;
-        circle.approachcircle.time_appear = circle.time_to_appear;
+            circle->approachcircle.position = circle->position;
+            circle->approachcircle.time_appear = circle->time_to_appear;
 
-        circles.push_front(circle);
+            if (std::stoi(substrings[3]) & NEW_COMBO)
+            {
+                combo = 1;
+                circle->combo = 1;
+            }
+            else circle->combo = combo++;
+
+            if (combo >= 10) combo = 1;
+
+            hitobjects.push_front(circle);
+        }
+//        else if (std::stoi(substrings[3]) & SPINNER)
+//        {
+//            Spinner spinner(game);
+//            hitobjects.push_front(spinner);
+//        }
     }
 }
 

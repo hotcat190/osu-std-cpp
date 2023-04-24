@@ -1,6 +1,6 @@
 #pragma once
 
-//Positions are centered
+//Circles' positions are calculated from the center
 
 struct Position
 {

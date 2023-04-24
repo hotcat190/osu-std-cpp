@@ -2,14 +2,12 @@
 
 #include <string>
 #include <deque>
-#include <vector>
 
-#include "circle.h"
-
-class Circle;
+class HitObject;
+class Game;
 
 class BeatmapManager
 {
 public:
-    static void loadCirclesFromBeatmap(std::string path, std::deque<Circle>& circles);
+    static void loadHitObjectsFromBeatmap(std::string path, std::deque<HitObject*>& hitobjects, Game& game);
 };

@@ -1,28 +1,27 @@
 #include "circle.h"
-#include <cmath>
-#include <iostream>
+#include "game.h"
 
-Circle::Circle()
-    : position(400, 300),
-      hitcircle(nullptr),
-      hitcircleoverlay(nullptr),
+#include <cmath>
+
+enum {
+    HIT_WINDOW_50 = 120,
+    HIT_WINDOW_100 = 60,
+    HIT_WINDOW_300 = 30
+} HIT_WINDOW;
+
+Circle::Circle(Game& _game)
+    : game(_game),
       hit(false),
       miss(false),
       radius(CS_scaled),
-      time_to_hit(0),
-      time_to_appear(0),
-      approachcircle()
-{
-    for (int i = 0; i < 10; i++)
-    {
-        defaults[i] = nullptr;
-    }
-}
+      approachcircle(_game)
+{}
 
 Circle::~Circle()
-{
+{}
 
-}
+void Circle::handleMotion()
+{}
 
 bool Circle::InBound()
 {
@@ -31,39 +30,63 @@ bool Circle::InBound()
     return (std::sqrt((x-position.x)*(x-position.x)+(y-position.y)*(y-position.y)) <= radius/2);
 }
 
-void Circle::handleClick(Uint32 time_elapsed)
+void Circle::handleClick()
 {
-    if (time_elapsed < time_to_appear)
+    if (game.time_elapsed < time_to_appear)
+        return;
+    else if (isHit() || isMiss())
         return;
     else if (InBound())
     {
         //register hit
-        hit = true;
+        if (game.time_elapsed > time_to_appear && game.time_elapsed < time_to_hit - HIT_WINDOW_50)
+        {
+            HitObject::hit_type = HIT0;
+            miss = true;
+        }
+        else if ((game.time_elapsed > time_to_hit - HIT_WINDOW_50 && game.time_elapsed < time_to_hit - HIT_WINDOW_100) ||
+                 (game.time_elapsed > time_to_hit + HIT_WINDOW_100 && game.time_elapsed < time_to_hit + HIT_WINDOW_50)
+                 )
+        {
+            HitObject::hit_type = HIT50;
+            hit = true;
+        }
+        else if ((game.time_elapsed > time_to_hit - HIT_WINDOW_100 && game.time_elapsed < time_to_hit - HIT_WINDOW_300) ||
+                 (game.time_elapsed > time_to_hit + HIT_WINDOW_300 && game.time_elapsed < time_to_hit + HIT_WINDOW_100)
+                 )
+        {
+            HitObject::hit_type = HIT100;
+            hit = true;
+        }
+        else if ((game.time_elapsed > time_to_hit - HIT_WINDOW_300 && game.time_elapsed < time_to_hit + HIT_WINDOW_300))
+        {
+            HitObject::hit_type = HIT300;
+            hit = true;
+        }
     }
 }
 
-void Circle::update(Uint32 time_elapsed)
+void Circle::update()
 {
-    int HIT_WINDOW_50 = 120;
-    if (!hit && time_elapsed > time_to_hit + HIT_WINDOW_50)
+
+    if (!hit && game.time_elapsed > time_to_hit + HIT_WINDOW_50)
     {
 //        render fade out effect
-        std::cout << time_elapsed << std::endl;
         miss = true;
     }
 }
 
-void Circle::render(SDL_Renderer* ren, Uint32 time_elapsed)
+void Circle::render()
 {
-//    if (hit || miss)
-//        return;
-    if (time_elapsed < time_to_appear)
+    if (hit || miss)
+        return;
+    if (game.time_elapsed < time_to_appear)
         return;
     SDL_Rect dst = {position.x - radius/2, position.y - radius/2, radius, radius};
-    SDL_RenderCopy(ren, hitcircle, NULL, &dst);
-    SDL_RenderCopy(ren, defaults[1], NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.getTexture_hitcircle(), NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.getTexture_default(combo), NULL, &dst);
 
-    approachcircle.render(ren, time_elapsed);
+    approachcircle.render();
 }
 
 

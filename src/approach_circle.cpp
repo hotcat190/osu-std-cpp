@@ -1,22 +1,24 @@
 #include "approach_circle.h"
+#include "game.h"
 
-#include <iostream>
-
-ApproachCircle::ApproachCircle()
+ApproachCircle::ApproachCircle(Game& _game)
+    : game(_game)
 {}
 
 
 ApproachCircle::~ApproachCircle()
 {}
 
-void ApproachCircle::render(SDL_Renderer* ren, Uint32 time_elapsed)
+void ApproachCircle::render()
 {
-    time_alive = time_elapsed - time_appear;
+    time_alive = game.time_elapsed - time_appear;
+
     if (time_alive > AR_scaled)
         return;
-    radius -= (AC_scale-1)*CS_scaled*time_alive/AR_scaled;
-    std::cout << radius << std::endl;
-    std::cout << time_alive << std::endl;
-    SDL_Rect draw_area = {position.x - radius/2, position.y - radius/2, radius, radius};
-    SDL_RenderCopy(ren, texture, NULL, &draw_area);
+
+    int shrink_radius = (radius-CS_scaled)*(1.f-float(time_alive)/float(AR_scaled));
+    int render_radius = CS_scaled + shrink_radius;
+
+    SDL_Rect dst = {position.x - render_radius/2, position.y - render_radius/2, render_radius, render_radius};
+    SDL_RenderCopy(game.gRenderer, game.approachcircle_texture, NULL, &dst);
 }

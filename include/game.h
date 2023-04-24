@@ -2,15 +2,17 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include <SDL_ttf.h>
 
 #include <string>
 #include <iostream>
 #include <deque>
 
-#include "circle.h"
 #include "cursor.h"
-#include "beatmap_manager.h"
+
+class HitObject;
+class HitEffect;
 
 class Game
 {
@@ -26,30 +28,68 @@ public:
 
     void start();
 
+    SDL_Texture*    hitcircle;
+    SDL_Texture*    hitcircleoverlay;
+    SDL_Texture*    defaults[10];
+    SDL_Texture*    approachcircle_texture;
+
+    SDL_Texture*    hit300;
+    SDL_Texture*    hit100;
+    SDL_Texture*    hit50;
+    SDL_Texture*    hit0;
+
+    SDL_Texture*    scorebar_bg;
+    SDL_Texture*    scorebar_colour;
+    SDL_Texture*    fail_background;
+
+    SDL_Texture*    spinner_circle;
+
+    SDL_Texture*    getTexture_hitcircle() {return hitcircle;}
+    SDL_Texture*    getTexture_default(int combo) {return defaults[combo];}
+
     Mix_Chunk* hitnormal;
     Mix_Music* music;
     int effectVolume;
     int musicVolume;
     int masterVolume;
+
     int gWidth, gHeight;
+
     Uint32 time_elapsed;
 
-    std::deque<Circle> circles;
+    std::deque<HitObject*> hitobjects;
+    std::deque<HitEffect> hiteffects;
+
     Cursor cursor;
 
-private:
     SDL_Window*   gWindow;
     SDL_Renderer* gRenderer;
     _TTF_Font*    gFont;
-    bool          running;
-    Uint8         sdl_flags;
+
+private:
+    Uint8 sdl_flags;
 
     Uint32 init_time;
 
+    int health;
+
+    bool running;
+    bool failed;
+    bool retry;
+    bool quit;
+
     void init();
+
+    void load();
+    void loadTextures();
+    void loadAudio();
+    void loadHitObjects();
+
     void handleEvents();
     void update();
     void render();
     void clean();
     void log(std::ostream& os, const std::string &msg, bool fatal) const;
+
+    void renderFailScreen();
 };

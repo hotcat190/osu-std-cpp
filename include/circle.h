@@ -1,39 +1,38 @@
 #pragma once
 
 #include "position.h"
-#include "approach_circle.h"
 #include "difficulty_modifiers.h"
 
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include "approach_circle.h"
 
-class Circle
+#include "hit_type.h"
+#include "hit_object.h"
+
+class Game;
+
+class Circle : public HitObject
 {
 public:
-    Circle();
+    Circle(Game& _game);
     ~Circle();
 
-    SDL_Texture* getHitCircleTexture() {return hitcircle;}
+    Game& game;
 
-    Position        position;
-    SDL_Texture*    hitcircle;
-    SDL_Texture*    hitcircleoverlay;
-    SDL_Texture*    defaults[10];
     ApproachCircle  approachcircle;
 
-    bool isHit() {return hit;}
-    bool isMiss() {return miss;}
+    bool isHit() override {return hit;}
+    bool isMiss() override {return miss;}
 
-    void handleClick(Uint32 time_elapsed);
-    void update(Uint32 time_elapsed);
-    void render(SDL_Renderer* ren, Uint32 time_elapsed);
+    void handleClick() override;
+    void handleMotion() override;
+    void update() override;
+    void render() override;
 
-    Uint32 time_to_hit;
-    Uint32 time_to_appear;
+    HIT_OBJECT_TYPE getHitObjectType() override {return HIT_CIRCLE;}
 
 private:
     int radius;
-    bool InBound();
+    bool InBound() override;
     bool hit;
     bool miss;
     bool appeared;

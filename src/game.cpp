@@ -1,7 +1,16 @@
 #include "game.h"
+
 #include "texture_manager.h"
 #include "sound_manager.h"
 #include "beatmap_manager.h"
+
+#include "cursor.h"
+
+#include "hit_object.h"
+#include "circle.h"
+#include "spinner.h"
+
+#include "hit_effect.h"
 
 Game::Game()
     : gWindow(nullptr),
@@ -13,38 +22,74 @@ Game::Game()
       cursor(),
       hitnormal(nullptr),
       music(nullptr),
-      masterVolume(10),
+      masterVolume(25),
       musicVolume(50),
       effectVolume(50),
-      time_elapsed(0)
+      time_elapsed(0),
+      health(10000)
 {}
 
 Game::~Game()
 {}
+
+void Game::renderFailScreen()
+{
+    while (running && failed)
+    {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type != SDL_KEYDOWN)
+                continue;
+
+            int input = event.key.keysym.sym;
+            if (input == SDLK_BACKQUOTE)
+                retry = true;
+            break;
+        }
+
+        if (retry)
+            return;
+
+        render();
+    }
+}
 
 void Game::start()
 {
     init();
     running = true;
 
-    SoundManager::playMusic(music, musicVolume*masterVolume/100);
-
-    init_time = SDL_GetTicks();
-    std::cout << init_time << std::endl;
-
     while (running)
     {
-        time_elapsed = SDL_GetTicks() - init_time;
-        handleEvents();
-        update();
-        render();
+        load();
+
+        //Play Music
+        SoundManager::playMusic(music, musicVolume*masterVolume/100);
+
+        init_time = SDL_GetTicks();
+        std::cout << init_time << std::endl;
+
+        while (!failed)
+        {
+            time_elapsed = SDL_GetTicks() - init_time;
+            handleEvents();
+
+            if (!running)
+                break;
+
+            update();
+            render();
+        }
+//        renderFailScreen();
+//        if (!retry)
+//            running = false;
     }
     clean();
 }
 
 void Game::init()
 {
-
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         log(std::cout, "SDL_Init", false);
     log(std::cout, "SDL_Init", true);
@@ -66,32 +111,47 @@ void Game::init()
     if (gRenderer == nullptr)
         log(std::cout, "SDL_CreateRenderer", false);
     log(std::cout, "SDL_CreateRenderer", true);
+}
 
-    cursor.cursorTexture = TextureMananger::loadTexture("skin/cursor.png", gRenderer);
+void Game::load()
+{
+    loadTextures();
+    loadAudio();
+    loadHitObjects();
+}
 
-//    Circle circle;
-//    circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
-//    for (int i = 0; i < 10; i++)
-//    {
-//        circle.defaults[i] = TextureMananger::loadTexture("skin/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
-//    }
-//    circles.push_back(circle);
+void Game::loadTextures()
+{
+    cursor.cursorTexture = TextureMananger::loadTexture("skin/WhitecatEZ/cursor.png", gRenderer);
 
-    BeatmapManager::loadCirclesFromBeatmap("songs/1263264 katagiri - ch3rry (Short Ver)/katagiri - ch3rry (Short Ver.) (Inverse) [Blossom].osu", circles);
-    for (Circle& circle : circles)
+    hitcircle = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircle.png", gRenderer);
+    hitcircleoverlay = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircleoverlay.png", gRenderer);
+    approachcircle_texture = TextureMananger::loadTexture("skin/WhitecatEZ/approachcircle.png", gRenderer);
+    for (int i = 0; i < 10; i++)
     {
-        circle.hitcircle = TextureMananger::loadTexture("skin/hitcircle.png", gRenderer);
-        circle.hitcircleoverlay = TextureMananger::loadTexture("skin/hitcircleoverlay.png", gRenderer);
-        circle.approachcircle.texture = TextureMananger::loadTexture("skin/approachcircle.png", gRenderer);
-        for (int i = 0; i < 10; i++)
-        {
-            circle.defaults[i] = TextureMananger::loadTexture("skin/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
-        }
+        defaults[i] = TextureMananger::loadTexture("skin/WhitecatEZ/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
     }
+    hit300 = TextureMananger::loadTexture("skin/WhitecatEZ/hit300.png", gRenderer);
+    hit100 = TextureMananger::loadTexture("skin/WhitecatEZ/hit100-0@2x.png", gRenderer);
+    hit50  = TextureMananger::loadTexture("skin/WhitecatEZ/hit50-0@2x.png", gRenderer);
+    hit0   = TextureMananger::loadTexture("skin/WhitecatEZ/hit0-0@2x.png", gRenderer);
 
-    hitnormal = SoundManager::loadSFX("skin/normal-hitnormal.ogg");
-    music = SoundManager::loadAudio("songs/1263264 katagiri - ch3rry (Short Ver)/audio.mp3");
+    scorebar_bg = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-bg@2x.png", gRenderer);
+    scorebar_colour = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-colour@2x.png", gRenderer);
+    fail_background = TextureMananger::loadTexture("skin/WhitecatEZ/fail-background.png@2x.png", gRenderer);
 
+    spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", gRenderer);
+}
+
+void Game::loadAudio()
+{
+    hitnormal = SoundManager::loadSFX("skin/WhitecatEZ/normal-hitnormal.ogg");
+    music = SoundManager::loadAudio("songs/1388906 Raphlesia & BilliumMoto - My Love/audio.mp3");
+}
+
+void Game::loadHitObjects()
+{
+    BeatmapManager::loadHitObjectsFromBeatmap("songs/1388906 Raphlesia & BilliumMoto - My Love/Raphlesia & BilliumMoto - My Love (Mao) [Our Love].osu", hitobjects, *this);
 }
 
 void Game::handleEvents()
@@ -107,12 +167,14 @@ void Game::handleEvents()
 
         case SDL_MOUSEMOTION:
             cursor.handleMotion();
+            if (hitobjects.size() > 0)
+                hitobjects.back()->handleMotion();
             break;
 
         case SDL_MOUSEBUTTONDOWN:
             cursor.handleClick();
-            if (circles.size() > 0)
-                circles.back().handleClick(time_elapsed);
+            if (hitobjects.size() > 0)
+                hitobjects.back()->handleClick();
             break;
 
         case SDL_KEYDOWN:
@@ -122,8 +184,8 @@ void Game::handleEvents()
             if (input == K1 || input == K2)
             {
                 cursor.handleClick();
-                if (circles.size() > 0)
-                    circles.back().handleClick(time_elapsed);
+                if (hitobjects.size() > 0)
+                    hitobjects.back()->handleClick();
             }
             break;
         }
@@ -137,19 +199,51 @@ void Game::update()
 //        running = false;
 //        return;
 //    }
-    if (circles.size() > 0)
+    if (failed)
+        return;
+
+//    health -= 1;
+
+    if (health == 0)
     {
-        circles.back().update(time_elapsed);
-        if (circles.back().isHit())
+        failed = true;
+        return;
+    }
+
+    if (hitobjects.size() > 0)
+    {
+        hitobjects.back()->update();
+        if (hitobjects.back()->getHitObjectType() == HIT_CIRCLE)
         {
-            SoundManager::playHitEffect(hitnormal, effectVolume*masterVolume/100);
-            //play hit effect
-            circles.pop_back();
+            hitobjects.back() = static_cast<Circle*>(hitobjects.back());
+            if (hitobjects.back()->isHit())
+            {
+//                health += 1000;
+                SoundManager::playSoundEffect(hitnormal, effectVolume*masterVolume/100);
+
+                HitEffect hiteffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+                hiteffects.push_front(hiteffect);
+
+                hitobjects.pop_back();
+            }
+            else if (hitobjects.back()->isMiss())
+            {
+                //SoundManager::playSoundEffect(combo_break, effectVolume*masterVolume/100);
+
+                HitEffect hiteffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+                hiteffects.push_front(hiteffect);
+
+                hitobjects.pop_back();
+            }
         }
-        else if (circles.back().isMiss())
+    }
+
+    if (hiteffects.size() > 0)
+    {
+        hiteffects.back().update();
+        if (hiteffects.back().time_alive > 250)
         {
-            //play miss effect
-            circles.pop_back();
+            hiteffects.pop_back();
         }
     }
 
@@ -161,14 +255,31 @@ void Game::render()
     //clear buffer
     SDL_RenderClear(gRenderer);
 
-    //render circle
-    for (auto circle : circles)
+    if (failed)
     {
-        circle.render(gRenderer, time_elapsed);
+        SDL_RenderCopy(gRenderer, fail_background, nullptr, nullptr);
+        SDL_RenderPresent(gRenderer);
+        return;
+    }
+
+
+    //render hit objects
+    for (auto hitobject : hitobjects)
+    {
+        hitobject->render();
+    }
+
+    for (auto hiteffect : hiteffects)
+    {
+        hiteffect.render();
     }
 
     //render cursor
     cursor.render(gRenderer);
+
+    //render scorebar
+    SDL_Rect scorebar_rect = {0, 0, 1350*health/10000, 80};
+    SDL_RenderCopy(gRenderer, scorebar_bg, nullptr, &scorebar_rect);
 
     //present buffer
     SDL_RenderPresent(gRenderer);
