@@ -57,6 +57,7 @@ void Game::start()
         while (!failed)
         {
             time_elapsed = SDL_GetTicks() - init_time;
+            Uint32 timer_start = time_elapsed;
 
             handleEvents();
             if (!running || retry)
@@ -67,6 +68,9 @@ void Game::start()
                 break;
 
             render();
+
+            Uint32 timer_end = SDL_GetTicks() - init_time;
+            delta_time = timer_end - timer_start;
         }
         renderFailScreen();
         if (retry)
@@ -151,37 +155,54 @@ void Game::handleEvents()
     {
         switch(event.type)
         {
-        case SDL_QUIT:
-            running = false;
-            break;
+            case SDL_QUIT:
+            {
+                running = false;
+            }
+            case SDL_MOUSEMOTION:
+            {
+                cursor.handleMotion();
+                if (hitobjects.size() > 0)
+                    hitobjects.back()->handleMotion();
+                break;
+            }
 
-        case SDL_MOUSEMOTION:
-            cursor.handleMotion();
-            if (hitobjects.size() > 0)
-                hitobjects.back()->handleMotion();
-            break;
-
-        case SDL_MOUSEBUTTONDOWN:
-            cursor.handleClick();
-            if (hitobjects.size() > 0)
-                hitobjects.back()->handleClick();
-            break;
-
-        case SDL_KEYDOWN:
-            int input = event.key.keysym.sym;
-            int K1 = SDLK_z,
-                K2 = SDLK_x;
-            if (input == K1 || input == K2)
+            case SDL_KEYDOWN:
+//            {
+//                int input = event.key.keysym.sym;
+//                int K1 = SDLK_z,
+//                    K2 = SDLK_x;
+//                if (input != K1 && input != K2)
+//                    break;
+//            }
+                if (event.key.keysym.sym == SDLK_BACKQUOTE)
+                {
+                    retry = true;
+                    break;
+                }
+            case SDL_MOUSEBUTTONDOWN:
             {
                 cursor.handleClick();
                 if (hitobjects.size() > 0)
                     hitobjects.back()->handleClick();
+                break;
             }
-            else if (input == SDLK_BACKQUOTE)
+
+            case SDL_KEYUP:
+//            {
+//                int input = event.key.keysym.sym;
+//                int K1 = SDLK_z,
+//                    K2 = SDLK_x;
+//                if (input != K1 && input != K2)
+//                    break;
+//            }
+            case SDL_MOUSEBUTTONUP:
             {
-                retry = true;
+                cursor.handleRelease();
+                if (hitobjects.size() > 0)
+                    hitobjects.back()->handleRelease();
+                break;
             }
-            break;
         }
     }
 }
@@ -267,7 +288,7 @@ void Game::render()
     //render hit objects
     for (auto hitobject : hitobjects)
     {
-        hitobject->render();
+        if (time_elapsed > hitobject->time_to_appear) hitobject->render();
     }
 
     for (auto hiteffect : hiteffects)
@@ -327,7 +348,7 @@ void Game::renderFailScreen()
             {
                 cursor.handleMotion();
             }
-            else if (event.type == SDL_MOUSEBUTTONDOWN)
+            else if (event.type == SDL_MOUSEBUTTONDOWN || (event.key.keysym.sym == SDLK_z | SDLK_x))
             {
                 SDL_Point cursor_pos = {cursor.position.x, cursor.position.y};
 

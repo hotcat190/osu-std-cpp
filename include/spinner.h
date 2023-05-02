@@ -15,12 +15,27 @@ public:
 
     void handleMotion() override;
     void handleClick() override;
+    void handleRelease() override;
     void update() override;
     void render() override;
 
     HIT_OBJECT_TYPE getHitObjectType() override {return SPINNER;}
 private:
     bool InBound() override {return true;}
-    double angle;
 
+    double calculateDeltaAngle();
+
+    double angle;
+    double delta_angle;
+
+    Position prev_cursor_pos;
+    Position curr_cursor_pos;
+
+    int spinner_gauge;
+    double velocity;
+    double acceleration;
+    bool spinning;
+
+    const double ACCELERATION_MAX = 1;
+    const double VELOCITY_MAX = 2;
 };

@@ -63,8 +63,8 @@ void BeatmapManager::loadHitObjectsFromBeatmap(std::string path, std::deque<HitO
         {
             Spinner* spinner = new Spinner(game);
 
-            spinner->time_to_hit = Uint32(std::stoi(substrings[2])) + uOffset;
-            spinner->time_to_appear = spinner->time_to_hit - AR_scaled;
+            spinner->time_to_hit = Uint32(std::stoi(substrings[5])) + uOffset;
+            spinner->time_to_appear = Uint32(std::stoi(substrings[2])) + uOffset;
 
             hitobjects.push_front(spinner);
         }

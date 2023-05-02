@@ -2,8 +2,7 @@
 #include "game.h"
 
 Cursor::Cursor(Game& _game)
-    : game(_game),
-      expand(false)
+    : game(_game)
 {
     SDL_GetMouseState(&position.x, &position.y);
     cursorRect.x = position.x - 55/2;
@@ -20,10 +19,12 @@ void Cursor::handleMotion()
 
 void Cursor::handleClick()
 {
-    if (expand)
-    {
-        //play expand effect
-    }
+
+}
+
+void Cursor::handleRelease()
+{
+
 }
 
 void Cursor::update()

@@ -61,6 +61,7 @@ public:
     int gWidth, gHeight;
 
     Uint32 time_elapsed;
+    Uint32 delta_time;
 
     std::deque<HitObject*> hitobjects;
     std::deque<HitEffect*> hiteffects;

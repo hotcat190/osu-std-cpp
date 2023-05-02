@@ -19,8 +19,8 @@ public:
 
     void handleMotion();
     void handleClick();
+    void handleRelease();
     void update();
     void render();
 private:
-    bool expand;
 };

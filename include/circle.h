@@ -22,6 +22,7 @@ public:
 
     void handleClick() override;
     void handleMotion() override;
+    void handleRelease() override {}
     void update() override;
     void render() override;
 

@@ -29,6 +29,7 @@ public:
 
     virtual void handleMotion() = 0;
     virtual void handleClick() = 0;
+    virtual void handleRelease() = 0;
     virtual void update() = 0;
     virtual void render() = 0;
 
