@@ -17,15 +17,11 @@ Game::Game()
       gRenderer(nullptr),
       gFont(nullptr),
       gTexture(nullptr),
+      gSound(nullptr),
       gWidth(800),
       gHeight(600),
       sdl_flags(0),
       cursor(*this),
-      hitnormal(nullptr),
-      music(nullptr),
-      masterVolume(25),
-      musicVolume(50),
-      effectVolume(50),
       time_elapsed(0),
       health(MAX_HEALTH)
 {}
@@ -39,13 +35,13 @@ void Game::start()
     running = true;
 
     gTexture->loadTextures();
-    loadAudio();
+    gSound->loadAudio();
 
     while (running)
     {
         loadHitObjects();
 
-        SoundManager::playMusic(music, musicVolume*masterVolume/100);
+        gSound->playMusic();
 
         health = MAX_HEALTH;
 
@@ -111,14 +107,7 @@ void Game::init()
     log(std::cout, "SDL_CreateRenderer", true);
 
     gTexture = new TextureMananger(*this);
-}
-
-
-
-void Game::loadAudio()
-{
-    hitnormal = SoundManager::loadSFX("skin/WhitecatEZ/normal-hitnormal.ogg");
-    music = SoundManager::loadAudio("songs/1263264 katagiri - ch3rry (Short Ver)/audio.mp3");
+    gSound = new SoundManager(*this);
 }
 
 void Game::loadHitObjects()
@@ -222,7 +211,7 @@ void Game::update()
             }
             if (health > MAX_HEALTH) health = MAX_HEALTH;
 
-            SoundManager::playSoundEffect(hitnormal, effectVolume*masterVolume/100);
+            gSound->playSoundEffect();
 
             HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
             hiteffects.push_front(hiteffect);
@@ -288,8 +277,8 @@ void Game::render()
 
 void Game::clean()
 {
-    Mix_FreeChunk(hitnormal);
-    Mix_FreeMusic(music);
+    gSound->freeAudio();
+    gTexture->freeTextures();
     SDL_DestroyWindow(gWindow);
     SDL_DestroyRenderer(gRenderer);
     SDL_Quit();

@@ -14,6 +14,7 @@
 class HitObject;
 class HitEffect;
 class TextureMananger;
+class SoundManager;
 
 class Game
 {
@@ -30,12 +31,7 @@ public:
     void start();
 
     TextureMananger* gTexture;
-
-    Mix_Chunk* hitnormal;
-    Mix_Music* music;
-    int effectVolume;
-    int musicVolume;
-    int masterVolume;
+    SoundManager* gSound;
 
     int gWidth, gHeight;
 
@@ -51,14 +47,13 @@ public:
     SDL_Renderer* gRenderer;
     _TTF_Font*    gFont;
 
-
-
 private:
     Uint8 sdl_flags;
 
     Uint32 init_time;
 
     float health;
+    const float MAX_HEALTH = 3000;
 
     bool running;
     bool failed;
@@ -73,9 +68,9 @@ private:
     void handleEvents();
     void update();
     void render();
+
     void clean();
     void log(std::ostream& os, const std::string &msg, bool fatal) const;
 
     void renderFailScreen();
-    const float MAX_HEALTH = 3000;
 };

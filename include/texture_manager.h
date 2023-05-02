@@ -16,6 +16,7 @@ public:
     SDL_Texture* loadTexture(std::string path, SDL_Renderer* ren);
 
     void loadTextures();
+    void freeTextures();
 
     SDL_Texture*    cursorTexture;
 

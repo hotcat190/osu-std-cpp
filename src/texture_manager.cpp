@@ -24,10 +24,12 @@ void TextureMananger::loadTextures()
     hitcircle = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircle.png", game.gRenderer);
     hitcircleoverlay = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircleoverlay.png", game.gRenderer);
     approachcircle_texture = TextureMananger::loadTexture("skin/WhitecatEZ/approachcircle.png", game.gRenderer);
+
     for (int i = 0; i < 10; i++)
     {
         defaults[i] = TextureMananger::loadTexture("skin/WhitecatEZ/Defaults/default-" + std::to_string(i) + "@2x.png", game.gRenderer);
     }
+
     hit300 = TextureMananger::loadTexture("skin/WhitecatEZ/hit300.png", game.gRenderer);
     hit100 = TextureMananger::loadTexture("skin/WhitecatEZ/hit100-0@2x.png", game.gRenderer);
     hit50  = TextureMananger::loadTexture("skin/WhitecatEZ/hit50-0@2x.png", game.gRenderer);
@@ -41,4 +43,32 @@ void TextureMananger::loadTextures()
     pause_back = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", game.gRenderer);
 
     spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", game.gRenderer);
+}
+
+void TextureMananger::freeTextures()
+{
+    SDL_DestroyTexture(cursorTexture);
+
+    SDL_DestroyTexture(hitcircle);
+    SDL_DestroyTexture(hitcircleoverlay);
+    SDL_DestroyTexture(approachcircle_texture);
+
+    for (int i = 0; i < 10; i++)
+    {
+        SDL_DestroyTexture(defaults[i]);
+    }
+
+    SDL_DestroyTexture(hit300);
+    SDL_DestroyTexture(hit100);
+    SDL_DestroyTexture(hit50);
+    SDL_DestroyTexture(hit0);
+
+    SDL_DestroyTexture(scorebar_bg);
+    SDL_DestroyTexture(scorebar_colour);
+
+    SDL_DestroyTexture(fail_background);
+    SDL_DestroyTexture(pause_retry);
+    SDL_DestroyTexture(pause_back);
+
+    SDL_DestroyTexture(spinner_circle);
 }
