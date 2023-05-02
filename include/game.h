@@ -13,6 +13,7 @@
 
 class HitObject;
 class HitEffect;
+class TextureMananger;
 
 class Game
 {
@@ -28,29 +29,7 @@ public:
 
     void start();
 
-    SDL_Texture*    hitcircle;
-    SDL_Texture*    hitcircleoverlay;
-    SDL_Texture*    defaults[10];
-    SDL_Texture*    approachcircle_texture;
-
-    SDL_Texture*    hit300;
-    SDL_Texture*    hit100;
-    SDL_Texture*    hit50;
-    SDL_Texture*    hit0;
-
-    SDL_Texture*    scorebar_bg;
-    SDL_Texture*    scorebar_colour;
-
-    SDL_Texture*    map_bg;
-
-    SDL_Texture*    fail_background;
-    SDL_Texture*    pause_retry;
-    SDL_Texture*    pause_back;
-
-    SDL_Texture*    spinner_circle;
-
-    SDL_Texture*    getTexture_hitcircle() {return hitcircle;}
-    SDL_Texture*    getTexture_default(int combo) {return defaults[combo];}
+    TextureMananger* gTexture;
 
     Mix_Chunk* hitnormal;
     Mix_Music* music;
@@ -72,6 +51,8 @@ public:
     SDL_Renderer* gRenderer;
     _TTF_Font*    gFont;
 
+
+
 private:
     Uint8 sdl_flags;
 
@@ -85,8 +66,7 @@ private:
 
     void init();
 
-    void load();
-    void loadTextures();
+
     void loadAudio();
     void loadHitObjects();
 

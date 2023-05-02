@@ -1,5 +1,6 @@
 #include "circle.h"
 #include "game.h"
+#include "texture_manager.h"
 
 #include <cmath>
 
@@ -79,8 +80,8 @@ void Circle::render()
     if (hit || miss)
         return;
     SDL_Rect dst = {position.x - radius/2, position.y - radius/2, radius, radius};
-    SDL_RenderCopy(game.gRenderer, game.getTexture_hitcircle(), NULL, &dst);
-    SDL_RenderCopy(game.gRenderer, game.getTexture_default(combo), NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->hitcircle, NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->defaults[combo], NULL, &dst);
 
     approachcircle.render();
 }

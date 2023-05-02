@@ -16,6 +16,7 @@ Game::Game()
     : gWindow(nullptr),
       gRenderer(nullptr),
       gFont(nullptr),
+      gTexture(nullptr),
       gWidth(800),
       gHeight(600),
       sdl_flags(0),
@@ -37,7 +38,7 @@ void Game::start()
     init();
     running = true;
 
-    loadTextures();
+    gTexture->loadTextures();
     loadAudio();
 
     while (running)
@@ -108,34 +109,11 @@ void Game::init()
     if (gRenderer == nullptr)
         log(std::cout, "SDL_CreateRenderer", false);
     log(std::cout, "SDL_CreateRenderer", true);
+
+    gTexture = new TextureMananger(*this);
 }
 
-void Game::loadTextures()
-{
-    cursor.cursorTexture = TextureMananger::loadTexture("skin/WhitecatEZ/cursor.png", gRenderer);
-    SDL_ShowCursor(false);
 
-    hitcircle = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircle.png", gRenderer);
-    hitcircleoverlay = TextureMananger::loadTexture("skin/WhitecatEZ/hitcircleoverlay.png", gRenderer);
-    approachcircle_texture = TextureMananger::loadTexture("skin/WhitecatEZ/approachcircle.png", gRenderer);
-    for (int i = 0; i < 10; i++)
-    {
-        defaults[i] = TextureMananger::loadTexture("skin/WhitecatEZ/Defaults/default-" + std::to_string(i) + "@2x.png", gRenderer);
-    }
-    hit300 = TextureMananger::loadTexture("skin/WhitecatEZ/hit300.png", gRenderer);
-    hit100 = TextureMananger::loadTexture("skin/WhitecatEZ/hit100-0@2x.png", gRenderer);
-    hit50  = TextureMananger::loadTexture("skin/WhitecatEZ/hit50-0@2x.png", gRenderer);
-    hit0   = TextureMananger::loadTexture("skin/WhitecatEZ/hit0-0@2x.png", gRenderer);
-
-    scorebar_bg = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-bg@2x.png", gRenderer);
-    scorebar_colour = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-colour@2x.png", gRenderer);
-
-    fail_background = TextureMananger::loadTexture("skin/WhitecatEZ/fail-background@2x.png", gRenderer);
-    pause_retry = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", gRenderer);
-    pause_back = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", gRenderer);
-
-    spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", gRenderer);
-}
 
 void Game::loadAudio()
 {
@@ -299,7 +277,7 @@ void Game::render()
     //render scorebar
     SDL_Rect scorebar_bg_src = {0, 0, 980*health/MAX_HEALTH, 80};
     SDL_Rect scorebar_bg_dst = {0, 0, 490*health/MAX_HEALTH, 40};
-    SDL_RenderCopy(gRenderer, scorebar_bg, &scorebar_bg_src, &scorebar_bg_dst);
+    SDL_RenderCopy(gRenderer, gTexture->scorebar_bg, &scorebar_bg_src, &scorebar_bg_dst);
 
     //render cursor
     cursor.render();
@@ -374,9 +352,9 @@ void Game::renderFailScreen()
         SDL_RenderClear(gRenderer);
 
 
-        SDL_RenderCopy(gRenderer, fail_background, nullptr, &fail_bg_rect);
-        SDL_RenderCopy(gRenderer, pause_retry, nullptr, &pause_retry_rect);
-        SDL_RenderCopy(gRenderer, pause_back, nullptr, &pause_back_rect);
+        SDL_RenderCopy(gRenderer, gTexture->fail_background, nullptr, &fail_bg_rect);
+        SDL_RenderCopy(gRenderer, gTexture->pause_retry, nullptr, &pause_retry_rect);
+        SDL_RenderCopy(gRenderer, gTexture->pause_back, nullptr, &pause_back_rect);
 
         cursor.render();
 

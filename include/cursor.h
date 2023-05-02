@@ -15,7 +15,6 @@ public:
 
     Position position;
     SDL_Rect cursorRect = {0, 0, 55, 55};
-    SDL_Texture* cursorTexture;
 
     void handleMotion();
     void handleClick();

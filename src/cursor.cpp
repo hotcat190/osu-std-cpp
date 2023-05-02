@@ -1,5 +1,6 @@
 #include "cursor.h"
 #include "game.h"
+#include "texture_manager.h"
 
 Cursor::Cursor(Game& _game)
     : game(_game)
@@ -35,7 +36,7 @@ void Cursor::update()
 
 void Cursor::render()
 {
-    SDL_RenderCopy(game.gRenderer, cursorTexture, nullptr, &cursorRect);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->cursorTexture, nullptr, &cursorRect);
 }
 
 

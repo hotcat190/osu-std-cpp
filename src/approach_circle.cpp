@@ -1,5 +1,6 @@
 #include "approach_circle.h"
 #include "game.h"
+#include "texture_manager.h"
 
 ApproachCircle::ApproachCircle(Game& _game)
     : game(_game)
@@ -20,5 +21,5 @@ void ApproachCircle::render()
     int render_radius = CS_scaled + shrink_radius;
 
     SDL_Rect dst = {position.x - render_radius/2, position.y - render_radius/2, render_radius, render_radius};
-    SDL_RenderCopy(game.gRenderer, game.approachcircle_texture, NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->approachcircle_texture, NULL, &dst);
 }

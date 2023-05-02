@@ -1,6 +1,6 @@
 #include "hit_effect.h"
-
 #include "game.h"
+#include "texture_manager.h"
 
 HitEffect::HitEffect(Game& _game, Position _pos, HIT_TYPE _hit_type, Uint32 _time_appeared)
     : game(_game),
@@ -23,18 +23,18 @@ void HitEffect::render()
     SDL_Rect dst = {position.x - width/2, position.y - height/4, width, height};
     if (hit_type == HIT300)
     {
-        SDL_RenderCopy(game.gRenderer, game.hit300, nullptr, &dst);
+        SDL_RenderCopy(game.gRenderer, game.gTexture->hit300, nullptr, &dst);
     }
     if (hit_type == HIT100)
     {
-        SDL_RenderCopy(game.gRenderer, game.hit100, nullptr, &dst);
+        SDL_RenderCopy(game.gRenderer, game.gTexture->hit100, nullptr, &dst);
     }
     else if (hit_type == HIT50)
     {
-        SDL_RenderCopy(game.gRenderer, game.hit50, nullptr, &dst);
+        SDL_RenderCopy(game.gRenderer, game.gTexture->hit50, nullptr, &dst);
     }
     else if (hit_type == HIT0)
     {
-        SDL_RenderCopy(game.gRenderer, game.hit0, nullptr, &dst);
+        SDL_RenderCopy(game.gRenderer, game.gTexture->hit0, nullptr, &dst);
     }
 }

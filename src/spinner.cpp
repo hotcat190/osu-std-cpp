@@ -1,5 +1,6 @@
 #include "spinner.h"
 #include "game.h"
+#include "texture_manager.h"
 
 #include <cmath>
 
@@ -80,5 +81,5 @@ void Spinner::update()
 void Spinner::render()
 {
     SDL_Rect dst = {position.x-150, position.y-150, 300, 300};
-    SDL_RenderCopyEx(game.gRenderer, game.spinner_circle, nullptr, &dst, angle, nullptr, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(game.gRenderer, game.gTexture->spinner_circle, nullptr, &dst, angle, nullptr, SDL_FLIP_NONE);
 }
