@@ -24,6 +24,7 @@ public:
     SDL_Texture*    hitcircleoverlay;
     SDL_Texture*    defaults[10];
     SDL_Texture*    approachcircle_texture;
+    SDL_Texture*    spinner_circle;
 
     SDL_Texture*    hit300;
     SDL_Texture*    hit100;
@@ -33,12 +34,10 @@ public:
     SDL_Texture*    scorebar_bg;
     SDL_Texture*    scorebar_colour;
 
-    SDL_Texture*    map_bg;
-
     SDL_Texture*    fail_background;
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
 
-    SDL_Texture*    spinner_circle;
+    SDL_Texture*    map_bg;
 
 };

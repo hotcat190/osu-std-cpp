@@ -80,8 +80,9 @@ void Circle::render()
     if (hit || miss)
         return;
     SDL_Rect dst = {position.x - radius/2, position.y - radius/2, radius, radius};
-    SDL_RenderCopy(game.gRenderer, game.gTexture->hitcircle, NULL, &dst);
-    SDL_RenderCopy(game.gRenderer, game.gTexture->defaults[combo], NULL, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->hitcircle, nullptr, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->hitcircleoverlay, nullptr, &dst);
+    SDL_RenderCopy(game.gRenderer, game.gTexture->defaults[combo], nullptr, &dst);
 
     approachcircle.render();
 }

@@ -30,6 +30,8 @@ void TextureMananger::loadTextures()
         defaults[i] = TextureMananger::loadTexture("skin/WhitecatEZ/Defaults/default-" + std::to_string(i) + "@2x.png", game.gRenderer);
     }
 
+    spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", game.gRenderer);
+
     hit300 = TextureMananger::loadTexture("skin/WhitecatEZ/hit300.png", game.gRenderer);
     hit100 = TextureMananger::loadTexture("skin/WhitecatEZ/hit100-0@2x.png", game.gRenderer);
     hit50  = TextureMananger::loadTexture("skin/WhitecatEZ/hit50-0@2x.png", game.gRenderer);
@@ -42,7 +44,7 @@ void TextureMananger::loadTextures()
     pause_retry = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", game.gRenderer);
     pause_back = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", game.gRenderer);
 
-    spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", game.gRenderer);
+    map_bg = TextureMananger::loadTexture("songs/321437 Kozato - Tsuki -Yue-/1234.jpg", game.gRenderer);
 }
 
 void TextureMananger::freeTextures()

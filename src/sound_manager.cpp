@@ -16,7 +16,7 @@ SoundManager::~SoundManager()
 void SoundManager::loadAudio()
 {
     hitnormal = SoundManager::loadSFX("skin/WhitecatEZ/normal-hitnormal.ogg");
-    music = SoundManager::loadMusic("songs/1263264 katagiri - ch3rry (Short Ver)/audio.mp3");
+    music = SoundManager::loadMusic("songs/321437 Kozato - Tsuki -Yue-/Kozato -  -Yue-.mp3");
 }
 
 Mix_Chunk* SoundManager::loadSFX(std::string path)

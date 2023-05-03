@@ -69,13 +69,17 @@ void Game::start()
             Uint32 timer_end = SDL_GetTicks() - init_time;
             delta_time = timer_end - timer_start;
         }
+
         renderFailScreen();
+
         if (retry)
         {
             while (hitobjects.size() > 0)
                 hitobjects.pop_back();
             while (hiteffects.size() > 0)
                 hiteffects.pop_back();
+            while (render_stack.size() > 0)
+                render_stack.pop_back();
         }
         else running = false;
     }
@@ -112,7 +116,7 @@ void Game::init()
 
 void Game::loadHitObjects()
 {
-    BeatmapManager::loadHitObjectsFromBeatmap("songs/1263264 katagiri - ch3rry (Short Ver)/katagiri - ch3rry (Short Ver.) (Inverse) [Blossom].osu", hitobjects, *this);
+    BeatmapManager::loadHitObjectsFromBeatmap("songs/321437 Kozato - Tsuki -Yue-/Kozato - Tsuki -Yue- (ktgster) [O (AR 9)].osu", hitobjects, *this);
 }
 
 void Game::handleEvents()
@@ -129,8 +133,8 @@ void Game::handleEvents()
             case SDL_MOUSEMOTION:
             {
                 cursor.handleMotion();
-                if (hitobjects.size() > 0)
-                    hitobjects.back()->handleMotion();
+                if (render_stack.size() > 0)
+                    render_stack.back()->handleMotion();
                 break;
             }
 
@@ -150,8 +154,8 @@ void Game::handleEvents()
             case SDL_MOUSEBUTTONDOWN:
             {
                 cursor.handleClick();
-                if (hitobjects.size() > 0)
-                    hitobjects.back()->handleClick();
+                if (render_stack.size() > 0)
+                    render_stack.back()->handleClick();
                 break;
             }
 
@@ -166,8 +170,8 @@ void Game::handleEvents()
             case SDL_MOUSEBUTTONUP:
             {
                 cursor.handleRelease();
-                if (hitobjects.size() > 0)
-                    hitobjects.back()->handleRelease();
+                if (render_stack.size() > 0)
+                    render_stack.back()->handleRelease();
                 break;
             }
         }
@@ -183,19 +187,27 @@ void Game::update()
 //    }
     cursor.update();
 
-    if (health < MAX_HEALTH && health > 0)
+    if (health < MAX_HEALTH && health > 0 && render_stack.size() > 0)
         health -= 0.1f;
 
+    //add next hit object to render stack
     if (hitobjects.size() > 0)
     {
         hitobjects.back()->update();
-//        if (hitobjects.back()->getHitObjectType() == HIT_CIRCLE)
-//        {
-//            hitobjects.back() = static_cast<Circle*>(hitobjects.back());
-//        }
-        if (hitobjects.back()->isHit())
+        if (time_elapsed >= hitobjects.back()->time_to_appear)
         {
-            switch (hitobjects.back()->hit_type)
+            render_stack.push_front(hitobjects.back());
+            hitobjects.pop_back();
+        }
+    }
+
+    //update the render stack
+    if (render_stack.size() > 0)
+    {
+        render_stack.back()->update();
+        if (render_stack.back()->isHit())
+        {
+            switch (render_stack.back()->hit_type)
             {
             case HIT300:
                 health += 300;
@@ -213,12 +225,12 @@ void Game::update()
 
             gSound->playSoundEffect();
 
-            HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+            HitEffect* hiteffect = new HitEffect(*this, render_stack.back()->position, render_stack.back()->hit_type, SDL_GetTicks());
             hiteffects.push_front(hiteffect);
 
-            hitobjects.pop_back();
+            render_stack.pop_back();
         }
-        else if (hitobjects.back()->isMiss())
+        else if (render_stack.back()->isMiss())
         {
             //SoundManager::playSoundEffect(combo_break, effectVolume*masterVolume/100);
             health -= 300;
@@ -230,10 +242,10 @@ void Game::update()
                 return;
             }
 
-            HitEffect* hiteffect = new HitEffect(*this, hitobjects.back()->position, hitobjects.back()->hit_type, SDL_GetTicks());
+            HitEffect* hiteffect = new HitEffect(*this, render_stack.back()->position, render_stack.back()->hit_type, SDL_GetTicks());
             hiteffects.push_front(hiteffect);
 
-            hitobjects.pop_back();
+            render_stack.pop_back();
         }
     }
 
@@ -252,10 +264,14 @@ void Game::render()
     //clear buffer
     SDL_RenderClear(gRenderer);
 
+    SDL_SetTextureBlendMode(gTexture->map_bg, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(gTexture->map_bg, 25);
+    SDL_RenderCopy(gRenderer, gTexture->map_bg, nullptr, nullptr);
+
     //render hit objects
-    for (auto hitobject : hitobjects)
+    for (auto hitobject : render_stack)
     {
-        if (time_elapsed > hitobject->time_to_appear) hitobject->render();
+        hitobject->render();
     }
 
     for (auto hiteffect : hiteffects)

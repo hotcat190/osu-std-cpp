@@ -39,6 +39,7 @@ public:
     Uint32 delta_time;
 
     std::deque<HitObject*> hitobjects;
+    std::deque<HitObject*> render_stack;
     std::deque<HitEffect*> hiteffects;
 
     Cursor cursor;
@@ -73,4 +74,5 @@ private:
     void log(std::ostream& os, const std::string &msg, bool fatal) const;
 
     void renderFailScreen();
+    void renderResultScreen();
 };

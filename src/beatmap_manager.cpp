@@ -10,7 +10,7 @@
 #include <sstream>
 #include <vector>
 
-const int uOffset = 100; //universal offset
+const int uOffset = 40; //universal offset
 
 void BeatmapManager::loadHitObjectsFromBeatmap(std::string path, std::deque<HitObject*>& hitobjects, Game& game)
 {
