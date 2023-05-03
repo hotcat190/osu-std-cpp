@@ -16,11 +16,13 @@ public:
     void loadAudio();
     Mix_Chunk* loadSFX(std::string path);
     Mix_Music* loadMusic(std::string path);
-    void playSoundEffect();
+    void playSoundEffectHitNormal();
+    void playSoundEffectComboBreak();
     void playMusic();
     void freeAudio();
 
     Mix_Chunk* hitnormal;
+    Mix_Chunk* combobreak;
     Mix_Music* music;
     int effectVolume;
     int musicVolume;

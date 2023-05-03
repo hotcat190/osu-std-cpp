@@ -10,11 +10,14 @@
 #include <sstream>
 #include <vector>
 
-const int uOffset = 40; //universal offset
+const int uOffset = 48; //universal offset
 
 void BeatmapManager::loadHitObjectsFromBeatmap(std::string path, std::deque<HitObject*>& hitobjects, Game& game)
 {
     std::ifstream fin(path);
+    if (!fin)
+        game.log(std::cout, "unable to open beatmap file", false);
+
     std::string line;
     do
     {

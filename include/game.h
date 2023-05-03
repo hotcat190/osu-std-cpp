@@ -15,6 +15,7 @@ class HitObject;
 class HitEffect;
 class TextureMananger;
 class SoundManager;
+class ScoreManager;
 
 class Game
 {
@@ -32,6 +33,7 @@ public:
 
     TextureMananger* gTexture;
     SoundManager* gSound;
+    ScoreManager* gScore;
 
     int gWidth, gHeight;
 
@@ -46,7 +48,9 @@ public:
 
     SDL_Window*   gWindow;
     SDL_Renderer* gRenderer;
-    _TTF_Font*    gFont;
+    TTF_Font*     gFont;
+
+    void log(std::ostream& os, const std::string &msg, bool fatal) const;
 
 private:
     Uint8 sdl_flags;
@@ -59,9 +63,9 @@ private:
     bool running;
     bool failed;
     bool retry;
+    bool passed;
 
     void init();
-
 
     void loadAudio();
     void loadHitObjects();
@@ -71,7 +75,6 @@ private:
     void render();
 
     void clean();
-    void log(std::ostream& os, const std::string &msg, bool fatal) const;
 
     void renderFailScreen();
     void renderResultScreen();

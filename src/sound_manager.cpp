@@ -4,6 +4,7 @@
 SoundManager::SoundManager(Game& _game)
     : game(_game),
       hitnormal(nullptr),
+      combobreak(nullptr),
       music(nullptr),
       masterVolume(25),
       musicVolume(50),
@@ -16,6 +17,7 @@ SoundManager::~SoundManager()
 void SoundManager::loadAudio()
 {
     hitnormal = SoundManager::loadSFX("skin/WhitecatEZ/normal-hitnormal.ogg");
+    combobreak = SoundManager::loadSFX("skin/WhitecatEZ/combobreak.wav");
     music = SoundManager::loadMusic("songs/321437 Kozato - Tsuki -Yue-/Kozato -  -Yue-.mp3");
 }
 
@@ -29,10 +31,16 @@ Mix_Music* SoundManager::loadMusic(std::string path)
     return Mix_LoadMUS(path.c_str());
 }
 
-void SoundManager::playSoundEffect()
+void SoundManager::playSoundEffectHitNormal()
 {
     Mix_Volume(-1, effectVolume*masterVolume/100);
     Mix_PlayChannel(-1, hitnormal, 0);
+}
+
+void SoundManager::playSoundEffectComboBreak()
+{
+    Mix_Volume(-1, effectVolume*masterVolume/100);
+    Mix_PlayChannel(-1, combobreak, 0);
 }
 
 void SoundManager::playMusic()

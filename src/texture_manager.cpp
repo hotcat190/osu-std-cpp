@@ -28,7 +28,11 @@ void TextureMananger::loadTextures()
     for (int i = 0; i < 10; i++)
     {
         defaults[i] = TextureMananger::loadTexture("skin/WhitecatEZ/Defaults/default-" + std::to_string(i) + "@2x.png", game.gRenderer);
+        score_entry[i] = TextureMananger::loadTexture("skin/WhitecatEZ/scoreentry-" + std::to_string(i) + "@2x.png", game.gRenderer);
     }
+    score_percent = TextureMananger::loadTexture("skin/WhitecatEZ/score-percent@2x.png", game.gRenderer);
+    score_dot = TextureMananger::loadTexture("skin/WhitecatEZ/scoreentry-dot@2x.png", game.gRenderer);
+    score_x = TextureMananger::loadTexture("skin/WhitecatEZ/scoreentry-x@2x.png", game.gRenderer);
 
     spinner_circle = TextureMananger::loadTexture("skin/WhitecatEZ/spinner-circle@2x.png", game.gRenderer);
 
@@ -44,7 +48,30 @@ void TextureMananger::loadTextures()
     pause_retry = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", game.gRenderer);
     pause_back = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", game.gRenderer);
 
+    ranking_panel = TextureMananger::loadTexture("skin/WhitecatEZ/ranking-panel@2x.png", game.gRenderer);
+
     map_bg = TextureMananger::loadTexture("songs/321437 Kozato - Tsuki -Yue-/1234.jpg", game.gRenderer);
+}
+
+SDL_Texture* TextureMananger::createText(const std::string& text)
+{
+    // create a surface which contains the desired text.
+    SDL_Color color = { 0xff, 0xff, 0xff, 0xff };
+    auto surface = TTF_RenderText_Solid(game.gFont, text.c_str(), color);
+    if (surface == nullptr) {
+        std::cerr << "Unable to create a surface with a text: " << TTF_GetError() << std::endl;
+        return nullptr;
+    }
+
+    // create a texture from the text surface.
+    auto texture = SDL_CreateTextureFromSurface(game.gRenderer, surface);
+    SDL_FreeSurface(surface);
+    if (texture == nullptr) {
+        std::cerr << "Unable to create texture from a text surface: " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+
+    return texture;
 }
 
 void TextureMananger::freeTextures()

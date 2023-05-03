@@ -14,6 +14,7 @@ public:
     Game& game;
 
     SDL_Texture* loadTexture(std::string path, SDL_Renderer* ren);
+    SDL_Texture* createText(const std::string& text);
 
     void loadTextures();
     void freeTextures();
@@ -31,6 +32,11 @@ public:
     SDL_Texture*    hit50;
     SDL_Texture*    hit0;
 
+    SDL_Texture*    score_entry[10];
+    SDL_Texture*    score_percent;
+    SDL_Texture*    score_dot;
+    SDL_Texture*    score_x;
+
     SDL_Texture*    scorebar_bg;
     SDL_Texture*    scorebar_colour;
 
@@ -38,6 +44,9 @@ public:
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
 
+    SDL_Texture*    ranking_panel;
+
     SDL_Texture*    map_bg;
+
 
 };
