@@ -5,6 +5,11 @@ This is a personal project for an assignment from the course AdvProg_AY2023 (INT
 
 [Releases](https://github.com/hotcat190/osu-std-cpp/releases)
 
+Compiling:
+- Clone the repo
+- Open 'osu-std-cpp.cbp' with Code::Blocks
+- Compile with Code::Blocks compiler
+
 Dependencies:
 - SDL2
 - SDL2_image
