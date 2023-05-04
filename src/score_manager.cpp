@@ -1,5 +1,6 @@
 #include "score_manager.h"
 #include "game.h"
+#include "hit_object.h"
 
 ScoreManager::ScoreManager(Game& _game)
     : game(_game),
@@ -12,24 +13,27 @@ ScoreManager::ScoreManager(Game& _game)
       nums_hit100k(0),
       nums_hit50(0),
       nums_hit0(0),
+      ranking('X'),
       accuracy(100.00)
 {}
 
 ScoreManager::~ScoreManager()
 {}
 
-void ScoreManager::update(HIT_TYPE hit_type)
+void ScoreManager::update(HIT_TYPE hit_type, int hit_combo)
 {
     switch (hit_type)
     {
     case HIT300:
         nums_hit300++;
+        if (hit_combo == 1) nums_hit300g++;
         combo++;
         score += 300*combo;
         break;
 
     case HIT100:
         nums_hit100++;
+        if (hit_combo == 1) nums_hit100k++;
         combo++;
         score += 100*combo;
         break;
@@ -51,4 +55,21 @@ void ScoreManager::update(HIT_TYPE hit_type)
 
     accuracy = float(300*nums_hit300 + 100*nums_hit100 + 50*nums_hit50)
              / float(3*(nums_hit300 + nums_hit100 + nums_hit50 + nums_hit0));
+
+    float ranking_param_nums_hit300 = 100*float(nums_hit300)/float(nums_hit300 + nums_hit100 + nums_hit50 + nums_hit0);
+    float ranking_param_nums_hit50  = 100*float(nums_hit50) /float(nums_hit300 + nums_hit100 + nums_hit50 + nums_hit0);
+
+    if (accuracy == 100)
+        ranking = 'X';
+    else if (ranking_param_nums_hit300 > 90 && ranking_param_nums_hit50 < 1 && nums_hit0 == 0)
+        ranking = 'S';
+    else if ((ranking_param_nums_hit300 > 80 && nums_hit0 == 0) || ranking_param_nums_hit300 > 90)
+        ranking = 'A';
+    else if ((ranking_param_nums_hit300 > 70 && nums_hit0 == 0) || ranking_param_nums_hit300 > 80)
+        ranking = 'B';
+    else if (ranking_param_nums_hit300 > 60)
+        ranking = 'C';
+    else
+        ranking = 'D';
 }
+

@@ -23,7 +23,9 @@ public:
     int nums_hit50;
     int nums_hit0;
 
+    char ranking;
+
     float accuracy;
 
-    void update(HIT_TYPE hit_type);
+    void update(HIT_TYPE hit_type, int hit_combo);
 };
