@@ -39,6 +39,7 @@
 		<Unit filename="include/cursor.h" />
 		<Unit filename="include/difficulty_modifiers.h" />
 		<Unit filename="include/game.h" />
+		<Unit filename="include/game_scene_render.h" />
 		<Unit filename="include/hit_effect.h" />
 		<Unit filename="include/hit_object.h" />
 		<Unit filename="include/hit_type.h" />
