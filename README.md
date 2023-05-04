@@ -7,7 +7,7 @@ This is a personal project for an assignment from the course AdvProg_AY2023 (INT
 
 Compiling:
 - Clone the repo
-- Open 'osu-std-cpp.cbp' with Code::Blocks
+- Open osu-std-cpp.cbp with Code::Blocks
 - Compile with Code::Blocks compiler
 
 Dependencies:
