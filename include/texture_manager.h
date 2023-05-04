@@ -60,12 +60,12 @@ public:
     SDL_Texture*    scorebar_colour;
 
     SDL_Texture*    fail_background;
+    SDL_Texture*    pause_overlay;
+    SDL_Texture*    pause_continue;
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
 
     SDL_Texture*    ranking_panel;
 
     SDL_Texture*    map_bg;
-
-
 };

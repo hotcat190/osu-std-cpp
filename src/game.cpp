@@ -27,6 +27,7 @@ Game::Game()
       sdl_flags(0),
       cursor(*this),
       time_elapsed(0),
+      time_paused(0),
       health(MAX_HEALTH)
 {}
 
@@ -36,51 +37,82 @@ Game::~Game()
 void Game::start()
 {
     init();
+
     running = true;
+
+    retry = false;
+    failed = false;
+    passed = false;
+    paused = false;
 
     gTexture->loadTextures();
     gSound->loadAudio();
 
     while (running)
     {
-        loadHitObjects();
-
-        gScore = new ScoreManager(*this);
-
-        health = MAX_HEALTH;
-
-        retry = false;
-        failed = false;
-        passed = false;
-
-        gSound->playMusic();
-
-        init_time = SDL_GetTicks();
-        std::cout << init_time << std::endl;
-
-        while (!failed && !passed)
+        if (!paused || retry)
         {
-            time_elapsed = SDL_GetTicks() - init_time;
+            retry = false;
+            paused = false;
+            time_paused = 0;
+
+            loadHitObjects();
+
+            gScore = new ScoreManager(*this);
+
+            health = MAX_HEALTH;
+
+            gSound->playMusic();
+
+            init_time = SDL_GetTicks();
+            std::cout << init_time << std::endl;
+        }
+        else
+        {
+            paused = false;
+            Mix_ResumeMusic();
+        }
+
+        while (!failed && !passed && !paused)
+        {
+            time_elapsed = SDL_GetTicks() - init_time - time_paused;
+
             Uint32 timer_start = time_elapsed;
 
             handleEvents();
-            if (!running || retry)
+            if (!running || retry || paused)
+            {
                 break;
+            }
 
             update();
             if (failed)
+            {
                 break;
+            }
 
             render();
 
-            Uint32 timer_end = SDL_GetTicks() - init_time;
+            Uint32 timer_end = SDL_GetTicks() - init_time - time_paused;
             delta_time = timer_end - timer_start;
         }
 
         if (failed)
+        {
             renderFailScreen();
-        if (passed)
+        }
+        else if (passed)
+        {
             renderResultScreen();
+        }
+        else if (paused)
+        {
+            Uint32 timer_start = SDL_GetTicks();
+            Mix_PauseMusic();
+            renderPauseScreen();
+            Uint32 timer_end = SDL_GetTicks();
+            time_paused += timer_end - timer_start;
+        }
 
         if (retry)
         {
@@ -92,7 +124,7 @@ void Game::start()
                 render_stack.pop_back();
             delete gScore;
         }
-        else running = false;
+        else if (!paused) running = false;
     }
     clean();
 }
@@ -167,6 +199,11 @@ void Game::handleEvents()
                     retry = true;
                     break;
                 }
+                else if (event.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    paused = true;
+                    break;
+                }
             case SDL_MOUSEBUTTONDOWN:
             {
                 cursor.handleClick();
@@ -204,7 +241,9 @@ void Game::update()
     cursor.update();
 
     if (health < MAX_HEALTH && health > 0 && render_stack.size() > 0)
+    {
         health -= 0.1f;
+    }
 
     //add next hit object to render stack
     if (hitobjects.size() > 0)

@@ -39,6 +39,7 @@ public:
 
     Uint32 time_elapsed;
     Uint32 delta_time;
+    Uint32 time_paused;
 
     std::deque<HitObject*> hitobjects;
     std::deque<HitObject*> render_stack;
@@ -64,6 +65,7 @@ private:
     bool failed;
     bool retry;
     bool passed;
+    bool paused;
 
     void init();
 
@@ -78,4 +80,5 @@ private:
 
     void renderFailScreen();
     void renderResultScreen();
+    void renderPauseScreen();
 };

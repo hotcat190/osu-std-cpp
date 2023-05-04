@@ -7,13 +7,89 @@
 
 #include <sstream>
 
+void Game::renderPauseScreen()
+{
+    SDL_Rect pause_overlay_rect = {gWidth/4, 0, gWidth/2, gHeight};
+    SDL_Rect pause_continue_rect = {gWidth/4 + 50, gHeight/2 - 180, 300, 130};
+    SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 25, 300, 80};
+    SDL_Rect pause_back_rect = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
+
+    while (running && !retry)
+    {
+        //Handle Events
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                running = false;
+            }
+            else if (event.type == SDL_MOUSEMOTION)
+            {
+                cursor.handleMotion();
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                SDL_Point cursor_pos = {cursor.position.x, cursor.position.y};
+
+                if (SDL_PointInRect(&cursor_pos, &pause_retry_rect))
+                {
+                    retry = true;
+                    return;
+                }
+                else if (SDL_PointInRect(&cursor_pos, &pause_back_rect))
+                {
+                    running = false;
+                }
+                else if (SDL_PointInRect(&cursor_pos, &pause_continue_rect))
+                {
+                    return;
+                }
+            }
+            else if (event.type == SDL_KEYDOWN)
+            {
+                int input = event.key.keysym.sym;
+
+                if (input == SDLK_BACKQUOTE)
+                {
+                    retry = true;
+                    return;
+                }
+                else if (input == SDLK_ESCAPE)
+                {
+                    return;
+                }
+            }
+        }
+
+        //update
+        cursor.update();
+
+        //Rendering
+        SDL_RenderClear(gRenderer);
+
+        SDL_SetTextureBlendMode(gTexture->map_bg, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(gTexture->map_bg, 25);
+        SDL_RenderCopy(gRenderer, gTexture->map_bg, nullptr, nullptr);
+
+        SDL_RenderCopy(gRenderer, gTexture->pause_overlay, nullptr, &pause_overlay_rect);
+        SDL_RenderCopy(gRenderer, gTexture->pause_continue, nullptr, &pause_continue_rect);
+        SDL_RenderCopy(gRenderer, gTexture->pause_retry, nullptr, &pause_retry_rect);
+        SDL_RenderCopy(gRenderer, gTexture->pause_back, nullptr, &pause_back_rect);
+
+        cursor.render();
+
+        SDL_RenderPresent(gRenderer);
+    }
+}
+
 void Game::renderFailScreen()
 {
     SDL_Rect fail_bg_rect = {gWidth/4, 0, gWidth/2, gHeight};
     SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 20, 300, 80};
     SDL_Rect pause_back_rect = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
 
-    while (running && failed)
+    while (running && failed && !retry)
     {
         //Handle Events
         SDL_Event event;
