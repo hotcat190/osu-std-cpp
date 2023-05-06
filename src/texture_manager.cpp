@@ -43,6 +43,8 @@ void TextureMananger::loadTextures()
     hit50  = TextureMananger::loadTexture("skin/WhitecatEZ/hit50-0@2x.png", game.gRenderer);
     hit0   = TextureMananger::loadTexture("skin/WhitecatEZ/hit0-0@2x.png", game.gRenderer);
 
+    play_skip = TextureMananger::loadTexture("skin/WhitecatEZ/play-skip@2x.png", game.gRenderer);
+
     scorebar_bg = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-bg@2x.png", game.gRenderer);
     scorebar_colour = TextureMananger::loadTexture("skin/WhitecatEZ/scorebar-colour@2x.png", game.gRenderer);
 
@@ -198,4 +200,10 @@ void TextureMananger::renderRanking()
     }
     SDL_Rect ranking_rect = {game.gWidth - 25, 55, 20, 25};
     SDL_RenderCopy(game.gRenderer, ranking_texture, nullptr, &ranking_rect);
+}
+
+void TextureMananger::renderSkipButton()
+{
+    SDL_Rect play_skip_rect = {(game.gWidth-1366)/2, game.gHeight-100-230/2, 1366,230};
+    SDL_RenderCopy(game.gRenderer, play_skip, nullptr, &play_skip_rect);
 }

@@ -23,6 +23,7 @@ public:
     void renderAccuracy();
     void renderCombo();
     void renderRanking();
+    void renderSkipButton();
 
     SDL_Texture*    cursorTexture;
 
@@ -58,6 +59,8 @@ public:
 
     SDL_Texture*    scorebar_bg;
     SDL_Texture*    scorebar_colour;
+
+    SDL_Texture*    play_skip;
 
     SDL_Texture*    fail_background;
     SDL_Texture*    pause_overlay;

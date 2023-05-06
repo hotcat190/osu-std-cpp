@@ -41,6 +41,9 @@ public:
     Uint32 time_elapsed;
     Uint32 delta_time;
     Uint32 time_paused;
+    Uint32 time_skipped;
+    Uint32 time_unskipped;
+    Uint32 skip_to_time;
 
     std::deque<HitObject*> hitobjects;
     std::deque<HitObject*> render_stack;
@@ -69,6 +72,7 @@ private:
     bool retry;
     bool passed;
     bool paused;
+    bool skipped;
 
     void init();
 

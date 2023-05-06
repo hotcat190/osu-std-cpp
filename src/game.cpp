@@ -27,6 +27,7 @@ Game::Game()
       ur_bar(*this),
       time_elapsed(0),
       time_paused(0),
+      skip_to_time(0),
       health(MAX_HEALTH)
 {}
 
@@ -43,6 +44,7 @@ void Game::start()
     failed = false;
     passed = false;
     paused = false;
+    skipped = false;
 
     gTexture->loadTextures();
     gSound->loadAudio();
@@ -54,6 +56,8 @@ void Game::start()
             retry = false;
             paused = false;
             time_paused = 0;
+            time_skipped = 0;
+            time_unskipped = 0;
 
             loadHitObjects();
 
@@ -62,6 +66,10 @@ void Game::start()
             health = MAX_HEALTH;
 
             gSound->playMusic();
+
+            if (hitobjects.back()->time_to_appear > 3000)
+                skip_to_time = hitobjects.back()->time_to_appear - 3000;
+
 
             init_time = SDL_GetTicks();
             std::cout << init_time << std::endl;
@@ -75,6 +83,9 @@ void Game::start()
         while (!failed && !passed && !paused)
         {
             time_elapsed = SDL_GetTicks() - init_time - time_paused;
+            if (skipped) time_elapsed += (skip_to_time);
+
+            std::cout << time_elapsed << std::endl;
 
             Uint32 timer_start = time_elapsed;
 
@@ -124,6 +135,7 @@ void Game::start()
             while (ur_bar.hits.size() > 0)
                 ur_bar.hits.pop_back();
             delete gScore;
+            skipped = false;
         }
         else if (!paused) running = false;
     }
@@ -210,6 +222,14 @@ void Game::handleEvents()
                 cursor.handleClick();
                 if (render_stack.size() > 0)
                     render_stack.back()->handleClick();
+                if (time_elapsed <= skip_to_time && !skipped)
+                {
+                    SDL_Rect play_skip_rect = {(gWidth-1366)/2, gHeight-100-230/2, 1366,230};
+                    SDL_Point point;
+                    SDL_GetMouseState(&point.x, &point.y);
+                    if (SDL_PointInRect(&point, &play_skip_rect))
+                        skipped = true;
+                }
                 break;
             }
 
@@ -239,7 +259,17 @@ void Game::update()
 //        running = false;
 //        return;
 //    }
+
+
     cursor.update();
+
+    if (time_elapsed <= skip_to_time && skipped)
+    {
+        Mix_RewindMusic();
+        init_time = SDL_GetTicks();
+        std::cout << double(skip_to_time)/1000.d << std::endl;
+        Mix_SetMusicPosition(double(skip_to_time)/1000.d);
+    }
 
     if (health < MAX_HEALTH && health > 0 && render_stack.size() > 0)
     {
@@ -338,6 +368,9 @@ void Game::render()
 
     //render UR bar
     ur_bar.render();
+
+    //render skip button
+    if (time_elapsed <= skip_to_time && !skipped) gTexture->renderSkipButton();
 
     //render hit objects
     for (auto hitobject : render_stack)
