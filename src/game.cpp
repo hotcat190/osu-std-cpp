@@ -6,8 +6,6 @@
 #include "beatmap_manager.h"
 #include "score_manager.h"
 
-#include "cursor.h"
-
 #include "hit_object.h"
 #include "circle.h"
 #include "spinner.h"
@@ -26,6 +24,7 @@ Game::Game()
       gHeight(600),
       sdl_flags(0),
       cursor(*this),
+      ur_bar(*this),
       time_elapsed(0),
       time_paused(0),
       health(MAX_HEALTH)
@@ -122,6 +121,8 @@ void Game::start()
                 hiteffects.pop_back();
             while (render_stack.size() > 0)
                 render_stack.pop_back();
+            while (ur_bar.hits.size() > 0)
+                ur_bar.hits.pop_back();
             delete gScore;
         }
         else if (!paused) running = false;
@@ -285,6 +286,8 @@ void Game::update()
 
             gScore->update(render_stack.back()->hit_type, render_stack.back()->combo);
 
+            ur_bar.update();
+
             render_stack.pop_back();
         }
         else if (render_stack.back()->isMiss())
@@ -332,6 +335,9 @@ void Game::render()
     SDL_SetTextureBlendMode(gTexture->map_bg, SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(gTexture->map_bg, 25);
     SDL_RenderCopy(gRenderer, gTexture->map_bg, nullptr, nullptr);
+
+    //render UR bar
+    ur_bar.render();
 
     //render hit objects
     for (auto hitobject : render_stack)

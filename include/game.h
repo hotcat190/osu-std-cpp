@@ -10,6 +10,7 @@
 #include <deque>
 
 #include "cursor.h"
+#include "ur_bar.h"
 
 class HitObject;
 class HitEffect;
@@ -46,6 +47,8 @@ public:
     std::deque<HitEffect*> hiteffects;
 
     Cursor cursor;
+
+    UR_Bar ur_bar;
 
     SDL_Window*   gWindow;
     SDL_Renderer* gRenderer;

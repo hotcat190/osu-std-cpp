@@ -43,11 +43,13 @@
 		<Unit filename="include/hit_effect.h" />
 		<Unit filename="include/hit_object.h" />
 		<Unit filename="include/hit_type.h" />
+		<Unit filename="include/hit_window.h" />
 		<Unit filename="include/position.h" />
 		<Unit filename="include/score_manager.h" />
 		<Unit filename="include/sound_manager.h" />
 		<Unit filename="include/spinner.h" />
 		<Unit filename="include/texture_manager.h" />
+		<Unit filename="include/ur_bar.h" />
 		<Unit filename="src/approach_circle.cpp" />
 		<Unit filename="src/beatmap_manager.cpp" />
 		<Unit filename="src/circle.cpp" />
@@ -59,6 +61,7 @@
 		<Unit filename="src/sound_manager.cpp" />
 		<Unit filename="src/spinner.cpp" />
 		<Unit filename="src/texture_manager.cpp" />
+		<Unit filename="src/ur_bar.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
