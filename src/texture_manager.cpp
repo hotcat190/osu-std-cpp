@@ -54,6 +54,8 @@ void TextureMananger::loadTextures()
     pause_retry     = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", game.gRenderer);
     pause_back      = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", game.gRenderer);
 
+    check_mark = TextureMananger::loadTexture("skin/WhitecatEZ/section-pass@2x.png", game.gRenderer);
+
     ranking_panel = TextureMananger::loadTexture("skin/WhitecatEZ/ranking-panel@2x.png", game.gRenderer);
 
     ranking_x = TextureMananger::loadTexture("skin/WhitecatEZ/ranking-X@2x.png", game.gRenderer);

@@ -9,10 +9,13 @@
 
 void Game::renderPauseScreen()
 {
-    SDL_Rect pause_overlay_rect = {gWidth/4, 0, gWidth/2, gHeight};
+    SDL_Rect pause_overlay_rect  = {gWidth/4, 0, gWidth/2, gHeight};
     SDL_Rect pause_continue_rect = {gWidth/4 + 50, gHeight/2 - 180, 300, 130};
-    SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 25, 300, 80};
-    SDL_Rect pause_back_rect = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
+    SDL_Rect pause_retry_rect    = {gWidth/4 + 50, gHeight/2 - 25, 300, 80};
+    SDL_Rect pause_back_rect     = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
+
+    SDL_Rect nofail_rect         = {gWidth/2 - 25, 75, 50, 50};
+    SDL_Rect check_mark_rect_src = {35, 0, 140, 140};
 
     while (running && !retry)
     {
@@ -40,6 +43,10 @@ void Game::renderPauseScreen()
                 else if (SDL_PointInRect(&cursor_pos, &pause_back_rect))
                 {
                     running = false;
+                }
+                else if (SDL_PointInRect(&cursor_pos, &nofail_rect))
+                {
+                    nofail = !nofail;
                 }
                 else if (SDL_PointInRect(&cursor_pos, &pause_continue_rect))
                 {
@@ -77,6 +84,12 @@ void Game::renderPauseScreen()
         SDL_RenderCopy(gRenderer, gTexture->pause_retry, nullptr, &pause_retry_rect);
         SDL_RenderCopy(gRenderer, gTexture->pause_back, nullptr, &pause_back_rect);
 
+        SDL_SetRenderDrawColor(gRenderer, 80,70,73, 255);
+        SDL_RenderDrawRect(gRenderer, &nofail_rect);
+        SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+
+        if (nofail) SDL_RenderCopy(gRenderer, gTexture->check_mark, &check_mark_rect_src, &nofail_rect);
+
         cursor.render();
 
         SDL_RenderPresent(gRenderer);
@@ -85,9 +98,12 @@ void Game::renderPauseScreen()
 
 void Game::renderFailScreen()
 {
-    SDL_Rect fail_bg_rect = {gWidth/4, 0, gWidth/2, gHeight};
-    SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 20, 300, 80};
-    SDL_Rect pause_back_rect = {gWidth/4 + 50, gHeight/2 + 80, 300, 130};
+    SDL_Rect fail_bg_rect     = {gWidth/4, 0, gWidth/2, gHeight};
+    SDL_Rect pause_retry_rect = {gWidth/4 + 50, gHeight/2 - 20 , 300, 80};
+    SDL_Rect pause_back_rect  = {gWidth/4 + 50, gHeight/2 + 80 , 300, 130};
+
+    SDL_Rect nofail_rect         = {gWidth/2 - 25, 75, 50, 50};
+    SDL_Rect check_mark_rect_src = {35, 0, 140, 140};
 
     while (running && failed && !retry)
     {
@@ -115,6 +131,10 @@ void Game::renderFailScreen()
                 {
                     running = false;
                 }
+                else if (SDL_PointInRect(&cursor_pos, &nofail_rect))
+                {
+                    nofail = !nofail;
+                }
             }
             else if (event.type == SDL_KEYDOWN)
             {
@@ -137,6 +157,12 @@ void Game::renderFailScreen()
         SDL_RenderCopy(gRenderer, gTexture->fail_background, nullptr, &fail_bg_rect);
         SDL_RenderCopy(gRenderer, gTexture->pause_retry, nullptr, &pause_retry_rect);
         SDL_RenderCopy(gRenderer, gTexture->pause_back, nullptr, &pause_back_rect);
+
+        SDL_SetRenderDrawColor(gRenderer, 80,70,73, 255);
+        SDL_RenderDrawRect(gRenderer, &nofail_rect);
+        SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+
+        if (nofail) SDL_RenderCopy(gRenderer, gTexture->check_mark, &check_mark_rect_src, &nofail_rect);
 
         cursor.render();
 

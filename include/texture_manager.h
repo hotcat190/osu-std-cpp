@@ -68,6 +68,8 @@ public:
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
 
+    SDL_Texture*    check_mark;
+
     SDL_Texture*    ranking_panel;
 
     SDL_Texture*    map_bg;

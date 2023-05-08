@@ -73,6 +73,7 @@ private:
     bool passed;
     bool paused;
     bool skipped;
+    bool nofail;
 
     void init();
 

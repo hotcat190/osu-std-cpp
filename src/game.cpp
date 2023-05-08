@@ -45,6 +45,7 @@ void Game::start()
     passed = false;
     paused = false;
     skipped = false;
+    nofail = false;
 
     gTexture->loadTextures();
     gSound->loadAudio();
@@ -324,7 +325,7 @@ void Game::update()
         {
             health -= 300;
 
-            if (health < 0)
+            if (health < 0 && !nofail)
             {
                 failed = true;
                 Mix_HaltMusic();
