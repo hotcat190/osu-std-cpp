@@ -5,6 +5,8 @@ This is a personal project for an assignment from the course AdvProg_AY2023 (INT
 
 [Releases](https://github.com/hotcat190/osu-std-cpp/releases)
 
+[Gameplay tutorial](https://www.youtube.com/watch?v=hcaEiC3xmPg)
+
 Compiling:
 - Clone the repo
 - Open osu-std-cpp.cbp with Code::Blocks
