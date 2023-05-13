@@ -63,6 +63,7 @@ private:
     Uint8 sdl_flags;
 
     Uint32 init_time;
+    Uint32 skipped_time;
 
     float health;
     const float MAX_HEALTH = 3000;

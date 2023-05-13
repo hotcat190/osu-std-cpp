@@ -88,7 +88,7 @@ void Game::renderPauseScreen()
         SDL_RenderDrawRect(gRenderer, &nofail_rect);
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 
-        if (nofail) SDL_RenderCopy(gRenderer, gTexture->check_mark, &check_mark_rect_src, &nofail_rect);
+        if (nofail) SDL_RenderCopy(gRenderer, gTexture->mod_no_fail, nullptr, &nofail_rect);
 
         cursor.render();
 
@@ -162,7 +162,7 @@ void Game::renderFailScreen()
         SDL_RenderDrawRect(gRenderer, &nofail_rect);
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 
-        if (nofail) SDL_RenderCopy(gRenderer, gTexture->check_mark, &check_mark_rect_src, &nofail_rect);
+        if (nofail) SDL_RenderCopy(gRenderer, gTexture->mod_no_fail, nullptr, &nofail_rect);
 
         cursor.render();
 

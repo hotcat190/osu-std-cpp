@@ -24,6 +24,7 @@ public:
     void renderCombo();
     void renderRanking();
     void renderSkipButton();
+    void renderNoFail();
 
     SDL_Texture*    cursorTexture;
 
@@ -68,7 +69,7 @@ public:
     SDL_Texture*    pause_retry;
     SDL_Texture*    pause_back;
 
-    SDL_Texture*    check_mark;
+    SDL_Texture*    mod_no_fail;
 
     SDL_Texture*    ranking_panel;
 

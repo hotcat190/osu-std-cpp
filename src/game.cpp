@@ -85,7 +85,6 @@ void Game::start()
         {
             time_elapsed = SDL_GetTicks() - init_time - time_paused;
             if (skipped) time_elapsed += (skip_to_time);
-
             std::cout << time_elapsed << std::endl;
 
             Uint32 timer_start = time_elapsed;
@@ -264,11 +263,10 @@ void Game::update()
 
     cursor.update();
 
-    if (time_elapsed <= skip_to_time && skipped)
+    if (time_elapsed < skip_to_time && skipped)
     {
         Mix_RewindMusic();
-        init_time = SDL_GetTicks();
-        std::cout << double(skip_to_time)/1000.d << std::endl;
+        init_time = SDL_GetTicks()  - time_paused;
         Mix_SetMusicPosition(double(skip_to_time)/1000.d);
     }
 
@@ -323,13 +321,12 @@ void Game::update()
         }
         else if (render_stack.back()->isMiss())
         {
-            health -= 300;
+            if (health > 0) health -= 300;
 
-            if (health < 0 && !nofail)
+            if (!nofail && health <= 0)
             {
                 failed = true;
                 Mix_HaltMusic();
-                return;
             }
 
             if (gScore->combo > 30)
@@ -400,6 +397,8 @@ void Game::render()
 
     //render combo
     gTexture->renderCombo();
+
+    if (nofail) gTexture->renderNoFail();
 
     //render cursor
     cursor.render();

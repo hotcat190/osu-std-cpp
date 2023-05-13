@@ -54,7 +54,7 @@ void TextureMananger::loadTextures()
     pause_retry     = TextureMananger::loadTexture("skin/WhitecatEZ/pause-retry@2x.png", game.gRenderer);
     pause_back      = TextureMananger::loadTexture("skin/WhitecatEZ/pause-back@2x.png", game.gRenderer);
 
-    check_mark = TextureMananger::loadTexture("skin/WhitecatEZ/section-pass@2x.png", game.gRenderer);
+    mod_no_fail = TextureMananger::loadTexture("skin/WhitecatEZ/selection-mod-nofail@2x.png", game.gRenderer);
 
     ranking_panel = TextureMananger::loadTexture("skin/WhitecatEZ/ranking-panel@2x.png", game.gRenderer);
 
@@ -200,7 +200,7 @@ void TextureMananger::renderRanking()
         ranking_texture = ranking_d_small;
         break;
     }
-    SDL_Rect ranking_rect = {game.gWidth - 25, 55, 20, 25};
+    SDL_Rect ranking_rect = {game.gWidth - 40, 55, 40, 50};
     SDL_RenderCopy(game.gRenderer, ranking_texture, nullptr, &ranking_rect);
 }
 
@@ -208,4 +208,10 @@ void TextureMananger::renderSkipButton()
 {
     SDL_Rect play_skip_rect = {(game.gWidth-1366)/2, game.gHeight-100-230/2, 1366,230};
     SDL_RenderCopy(game.gRenderer, play_skip, nullptr, &play_skip_rect);
+}
+
+void TextureMananger::renderNoFail()
+{
+    SDL_Rect no_fail_rect = {game.gWidth - 50, 100, 50, 50};
+    SDL_RenderCopy(game.gRenderer, mod_no_fail, nullptr, &no_fail_rect);
 }
